@@ -1,0 +1,6 @@
+rank,name,email,score,tier,skill_score,answer_quality,github_score,completeness,ai_penalty,flags
+1,Alice Sharma,alice@example.com,65.1,Standard,20.0,4.05,2.0,10.0,0.0,
+2,Eve Patel,eve@example.com,55.8,Standard,15.0,4.05,2.0,10.0,0.0,
+3,Bob Kumar,bob@example.com,40.5,Review,9.0,2.45,2.0,10.0,0.0,
+4,Charlie Das,charlie@example.com,28.5,Reject,5.0,0.65,2.0,10.0,0.0,
+5,Diana Mehta,diana@example.com,8.5,Reject,19.0,2.15,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: ['to summarize', 'utilize']"
