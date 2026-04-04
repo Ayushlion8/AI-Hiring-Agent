@@ -20,9 +20,9 @@ CSV / Internshala Export
 │ - AI phrases  │        │ - Weight updates │
 │ - Tiers       │        │ - NL queries     │
 └───────┬───────┘        └────────┬─────────┘
-        │                        │
-        ▼                        │
-┌───────────────┐                │
+        │                         │
+        ▼                         │
+┌───────────────┐                 │
 │ email_agent   │◀───────────────┘
 │ (Component 3) │     (weights feed back into scoring)
 │               │
