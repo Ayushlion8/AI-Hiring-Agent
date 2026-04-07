@@ -33,12 +33,7 @@ except ImportError:
     print("  Install with: pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib")
 
 # Anthropic
-try:
-    import anthropic
-    ANTHROPIC_AVAILABLE = True
-except ImportError:
-    ANTHROPIC_AVAILABLE = False
-    print("Warning: anthropic not installed. pip install anthropic")
+from llm_client import llm_complete, LLM_PROVIDER, llm_status
 
 GMAIL_SCOPES = [
     "https://www.googleapis.com/auth/gmail.modify",
@@ -358,7 +353,7 @@ def generate_reply(
     api_key: str,
 ) -> str:
     """Generate a contextual reply using Claude."""
-    if not ANTHROPIC_AVAILABLE:
+    if LLM_PROVIDER == "none":
         return (
             f"Hi {candidate_name},\n\nThank you for your response. "
             "We'll be in touch shortly.\n\nGenoTek Hiring Team"
@@ -368,7 +363,7 @@ def generate_reply(
     conversation_summary = ""
     if conversation_history:
         summary_parts = []
-        for msg in conversation_history[-4:]:  # Last 4 messages
+        for msg in conversation_history[-4:]:
             role = "Candidate" if msg["role"] == "candidate" else "GenoTek"
             summary_parts.append(f"{role}: {msg['content'][:300]}...")
         conversation_summary = "\n".join(summary_parts)
@@ -382,23 +377,17 @@ def generate_reply(
         tier=tier,
     )
 
-    client = anthropic.Anthropic(api_key=api_key)
-    try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=600,
-            system=system_prompt,
-            messages=[
-                {"role": "user", "content": "Write the reply email now."}
-            ]
-        )
-        return response.content[0].text
-    except Exception as e:
-        print(f"  LLM reply generation failed: {e}")
-        return (
-            f"Hi {candidate_name},\n\nThank you for your response — "
-            "we'll follow up shortly.\n\nGenoTek Hiring Team"
-        )
+    result = llm_complete(
+        system=system_prompt,
+        user="Write the reply email now.",
+        max_tokens=600,
+    )
+    if result:
+        return result
+    return (
+        f"Hi {candidate_name},\n\nThank you for your response — "
+        "we'll follow up shortly.\n\nGenoTek Hiring Team"
+    )
 
 
 # ------------------------------------------------------------------ #
@@ -408,12 +397,10 @@ class EmailAgent:
     def __init__(
         self,
         db_path: str = "hiring_agent.db",
-        anthropic_api_key: str = "",
-        gmail_credentials_path: str = "credentials.json",
+            gmail_credentials_path: str = "credentials.json",
         gmail_token_path: str = "token.json",
     ):
         self.db = ConversationDB(db_path)
-        self.anthropic_api_key = anthropic_api_key
         self.gmail_credentials_path = gmail_credentials_path
         self.gmail_token_path = gmail_token_path
         self.service = None
@@ -433,6 +420,7 @@ class EmailAgent:
         opening_question: str,
         score: float = 0.0,
         tier: str = "Review",
+        verbose: bool = False,
     ):
         """Initiate the first email to a candidate."""
         self.db.upsert_conversation(
@@ -461,9 +449,8 @@ class EmailAgent:
             self.db.append_message(candidate_id, "recruiter", body)
             print(f"  Sent opening email to {candidate_name} ({candidate_email})")
         else:
-            print(f"  [DRY RUN] Would send opening email to {candidate_name}")
-            print(f"  Subject: {subject}")
-            print(f"  Body preview: {body[:200]}...")
+            if verbose:
+                print(f"  [DRY RUN] {candidate_name} <{candidate_email}> | tier={tier} score={score}")
 
     def process_new_replies(self):
         """Check inbox for new candidate replies and respond."""
@@ -546,8 +533,7 @@ class EmailAgent:
                     conversation_history=conv["history"],
                     score=conv["score"],
                     tier=conv["tier"],
-                    api_key=self.anthropic_api_key,
-                )
+                            )
 
                 # Send reply in same thread
                 send_email(
@@ -598,8 +584,7 @@ class EmailAgent:
 if __name__ == "__main__":
     agent = EmailAgent(
         db_path="demo_hiring.db",
-        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
-    )
+            )
 
     print("=== Email Agent Demo (dry run — no Gmail) ===\n")
 
@@ -619,8 +604,9 @@ if __name__ == "__main__":
     )
 
     # Simulate generating a reply to a candidate response
-    if os.getenv("ANTHROPIC_API_KEY"):
+    if LLM_PROVIDER != "none":
         print("\n=== Generating sample Round 2 reply ===\n")
+        print(f"Using: {llm_status()}")
         reply = generate_reply(
             candidate_name="Alice Sharma",
             candidate_answer=(
@@ -633,11 +619,10 @@ if __name__ == "__main__":
             conversation_history=[],
             score=82.5,
             tier="Fast-Track",
-            api_key=os.getenv("ANTHROPIC_API_KEY"),
-        )
+            )
         print(reply)
     else:
-        print("\nSet ANTHROPIC_API_KEY to see LLM-generated replies.")
+        print("\nSet GEMINI_API_KEY to see LLM-generated replies.")
 
     print("\n=== Conversation DB state ===")
     conv = agent.db.get_conversation("alice@example.com")

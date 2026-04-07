@@ -13,11 +13,7 @@ import os
 from datetime import datetime, timezone
 from typing import Optional
 
-try:
-    import anthropic
-    ANTHROPIC_AVAILABLE = True
-except ImportError:
-    ANTHROPIC_AVAILABLE = False
+from llm_client import llm_complete, LLM_PROVIDER, llm_status
 
 ANALYSIS_TRIGGER_EVERY_N = 10   # Run analysis after every 10 candidates
 
@@ -335,13 +331,10 @@ class KnowledgeBase:
         analysis_text = ""
         insights = {}
 
-        if ANTHROPIC_AVAILABLE and api_key:
-            client = anthropic.Anthropic(api_key=api_key)
+        if LLM_PROVIDER != "none":
             try:
-                response = client.messages.create(
-                    model="claude-sonnet-4-20250514",
-                    max_tokens=1500,
-                    system="""You are an AI hiring system analyst. You analyze candidate interaction data 
+                raw = llm_complete(
+                    system="""You are an AI hiring system analyst. You analyze candidate interaction data
 to find patterns and improve the scoring algorithm. Be concrete and data-driven.
 Respond in JSON format with keys:
 - "summary": 2-sentence overview
@@ -351,15 +344,11 @@ Respond in JSON format with keys:
 - "best_questions": which questions produced most differentiated responses
 - "common_first_approach": what candidates try first
 - "success_predictors": what patterns predicted strong Round 2 performance""",
-                    messages=[{
-                        "role": "user",
-                        "content": (
-                            f"Analyze this hiring data and return JSON insights:\n\n"
-                            f"{json.dumps(data_summary, indent=2)}"
-                        )
-                    }]
+                    user=f"Analyze this hiring data and return JSON insights:\n\n{json.dumps(data_summary, indent=2)}",
+                    max_tokens=1500,
                 )
-                raw = response.content[0].text
+                if raw is None:
+                    raise Exception("LLM returned None")
                 # Strip markdown code fences if present
                 raw = raw.replace("```json", "").replace("```", "").strip()
                 try:
@@ -429,8 +418,8 @@ Respond in JSON format with keys:
           "What percentage of candidates mentioned Selenium first?"
           "What are the most common AI-generated phrases we've seen?"
         """
-        if not ANTHROPIC_AVAILABLE or not api_key:
-            return "LLM not available for natural language queries."
+        if LLM_PROVIDER == "none":
+            return "LLM not available. Set GEMINI_API_KEY."
 
         # Gather context
         candidates = self.get_all_candidates_summary()
@@ -447,27 +436,16 @@ Respond in JSON format with keys:
             "current_scoring_weights": weights,
         }
 
-        client = anthropic.Anthropic(api_key=api_key)
-        try:
-            response = client.messages.create(
-                model="claude-sonnet-4-20250514",
-                max_tokens=500,
-                system=(
-                    "You are an analyst for an AI hiring system. "
-                    "Answer questions about candidate data concisely and accurately. "
-                    "Use specific names and numbers from the data provided."
-                ),
-                messages=[{
-                    "role": "user",
-                    "content": (
-                        f"Data context:\n{json.dumps(context, indent=2)}\n\n"
-                        f"Question: {natural_language_question}"
-                    )
-                }]
-            )
-            return response.content[0].text
-        except Exception as e:
-            return f"Query failed: {e}"
+        result = llm_complete(
+            system=(
+                "You are an analyst for an AI hiring system. "
+                "Answer questions about candidate data concisely and accurately. "
+                "Use specific names and numbers from the data provided."
+            ),
+            user=f"Data context:\n{json.dumps(context, indent=2)}\n\nQuestion: {natural_language_question}",
+            max_tokens=500,
+        )
+        return result or "Query failed — LLM returned no response."
 
 
 # ------------------------------------------------------------------ #
@@ -527,20 +505,19 @@ if __name__ == "__main__":
     print(f"\nCurrent scoring weights: {kb.get_current_weights()}")
 
     # Run analysis (needs 10+ candidates, which we have)
-    api_key = os.getenv("ANTHROPIC_API_KEY", "")
-    if api_key:
-        print("\nRunning LLM-powered analysis...")
-        insights = kb.run_periodic_analysis(api_key)
+    if LLM_PROVIDER != "none":
+        print(f"\nRunning LLM-powered analysis via {llm_status()}...")
+        insights = kb.run_periodic_analysis("")
         if insights:
             print(f"\nKey findings: {insights.get('key_findings', 'N/A')}")
 
         print("\nQuerying knowledge base...")
         answer = kb.query(
             "Which 3 candidates showed the most original thinking, and why?",
-            api_key
+            ""
         )
         print(f"\nQuery result:\n{answer}")
     else:
-        print("\nSet ANTHROPIC_API_KEY for LLM-powered analysis and queries.")
+        print("\nSet GEMINI_API_KEY for LLM-powered analysis.")
         print("Running rule-based analysis instead...")
-        kb.run_periodic_analysis(api_key="")
+        kb.run_periodic_analysis("")

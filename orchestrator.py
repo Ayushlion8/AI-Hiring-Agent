@@ -1,11 +1,29 @@
 """
 Component 6: INTEGRATION — Full Pipeline Orchestrator
 
-Data flow:
-  CSV/Input → Scorer → EmailAgent → AntiCheat → KnowledgeBase (learning loop)
+Full data flow (Component 1 → 2 → 3 → 4 → 5 → back to 2):
+
+  ATS Source (Greenhouse / Lever / Workable / CSV / Mock)
+       │
+       ▼  access.py (Component 1)
+  candidates_raw.csv
+       │
+       ▼  scorer.py (Component 2)
+  scored_candidates.csv
+       │
+       ▼  email_agent.py (Component 3)
+  Gmail multi-round conversations
+       │
+       ▼  anti_cheat.py (Component 4)
+  Strike system + elimination
+       │
+       ▼  learning_system.py (Component 5)
+  Periodic LLM analysis → updated scoring weights → feeds back into Component 2
 
 Run modes:
-  python orchestrator.py --score input.csv        # Score a batch of applicants
+  python orchestrator.py --fetch                  # Fetch candidates (Component 1)
+  python orchestrator.py --score input.csv        # Score a batch (Component 2)
+  python orchestrator.py --full-run               # Fetch + Score + Engage in one shot
   python orchestrator.py --run                    # Start the live email polling loop
   python orchestrator.py --analyze                # Run analysis report manually
   python orchestrator.py --query "..."            # Query the knowledge base
@@ -21,6 +39,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from access import ATSRouter
 from scorer import score_candidates
 from anti_cheat import AntiCheatPipeline
 from email_agent import EmailAgent
@@ -30,7 +49,9 @@ from learning_system import KnowledgeBase
 # Config
 # ------------------------------------------------------------------ #
 DB_PATH = os.getenv("DB_PATH", "hiring_agent.db")
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+from llm_client import llm_complete, LLM_PROVIDER, llm_status
+# Keys are loaded inside llm_client from environment variables.
+# Set GEMINI_API_KEY (preferred) or ANTHROPIC_API_KEY before running.
 GMAIL_CREDENTIALS = os.getenv("GMAIL_CREDENTIALS", "credentials.json")
 GMAIL_TOKEN = os.getenv("GMAIL_TOKEN", "token.json")
 CHECK_GITHUB = os.getenv("CHECK_GITHUB", "false").lower() == "true"
@@ -52,15 +73,46 @@ class HiringPipeline:
         self.kb = KnowledgeBase(DB_PATH)
         self.anti_cheat = AntiCheatPipeline(
             db_path=DB_PATH,
-            anthropic_api_key=ANTHROPIC_API_KEY,
-        )
+            )
         self.email_agent = EmailAgent(
             db_path=DB_PATH,
-            anthropic_api_key=ANTHROPIC_API_KEY,
             gmail_credentials_path=GMAIL_CREDENTIALS,
             gmail_token_path=GMAIL_TOKEN,
         )
         self._setup_signal_handlers()
+
+    # ------------------------------------------------------------------ #
+    # Step 0 (Component 1): Fetch candidates from ATS / CSV / Mock
+    # ------------------------------------------------------------------ #
+    def fetch_candidates(self, source=None, output_csv="candidates_raw.csv", limit=None, **kwargs):
+        sep = "=" * 60
+        src = source or os.getenv("ATS_SOURCE", "mock")
+        print("\n" + sep)
+        print("COMPONENT 1: Fetching candidates (source: " + src + ")")
+        print(sep)
+        router = ATSRouter(source=src, **kwargs)
+        return router.fetch_and_save(output_csv=output_csv, db_path=DB_PATH, limit=limit)
+
+    def full_run(self, source="mock", count=100):
+        sep = "=" * 60
+        print("\n" + sep)
+        print("FULL PIPELINE: source=" + source + ", count=" + str(count))
+        print("LLM provider : " + llm_status())
+        print(sep)
+        # Clear conversation state so candidates aren't skipped on re-runs
+        import sqlite3 as _sq
+        conn = _sq.connect(DB_PATH)
+        conn.execute("DELETE FROM conversations")
+        conn.execute("DELETE FROM processed_message_ids")
+        conn.commit()
+        conn.close()
+        print("  [Reset] Cleared previous conversation state")
+        raw_csv = self.fetch_candidates(source=source, output_csv="candidates_raw.csv", mock_count=count)
+        scored_csv = "scored_candidates.csv"
+        self.score_batch(raw_csv, scored_csv)
+        self.engage_top_candidates(scored_csv, dry_run=True)
+        self.print_status()
+
 
     def _setup_signal_handlers(self):
         """Graceful shutdown on Ctrl+C or SIGTERM."""
@@ -111,8 +163,8 @@ class HiringPipeline:
             )
 
         # Trigger analysis if enough new candidates
-        if self.kb.should_run_analysis() and ANTHROPIC_API_KEY:
-            self.kb.run_periodic_analysis(ANTHROPIC_API_KEY)
+        if self.kb.should_run_analysis() and LLM_PROVIDER != "none":
+            self.kb.run_periodic_analysis("")
 
         print(f"\nScored {len(scored_df)} candidates. Output: {output_csv}")
         return scored_df
@@ -145,18 +197,21 @@ class HiringPipeline:
                 print("Falling back to dry run mode.")
                 dry_run = True
 
+        skipped_dup = 0
+        skipped_elim = 0
+        sent = 0
         for _, row in targets.iterrows():
             candidate_id = row["email"]
 
             # Skip eliminated candidates
             if self.anti_cheat.strike_system.is_eliminated(candidate_id):
-                print(f"  Skipping {row['name']} — eliminated")
+                skipped_elim += 1
                 continue
 
             # Check if already contacted
             existing = self.email_agent.db.get_conversation(candidate_id)
             if existing:
-                print(f"  Skipping {row['name']} — already in conversation (round {existing['current_round']})")
+                skipped_dup += 1
                 continue
 
             self.email_agent.start_conversation(
@@ -174,6 +229,23 @@ class HiringPipeline:
                 content=OPENING_QUESTION,
                 round_number=1,
             )
+            sent += 1
+
+        # Clean summary
+        print(f"  Sent/queued : {sent}")
+        if sent:
+            # Show first 5 as preview only
+            preview = targets[targets["email"].apply(
+                lambda e: not self.anti_cheat.strike_system.is_eliminated(e)
+            )].head(5)
+            for _, r in preview.iterrows():
+                print(f"    ↳ {r['name']} <{r['email']}> | {r['tier']} {r['score']}")
+            if sent > 5:
+                print(f"    ... and {sent - 5} more")
+        if skipped_dup:
+            print(f"  Already contacted: {skipped_dup} (skipped)")
+        if skipped_elim:
+            print(f"  Eliminated  : {skipped_elim} (skipped)")
 
     # ------------------------------------------------------------------ #
     # Step 3: Process incoming replies (called in polling loop)
@@ -251,9 +323,9 @@ class HiringPipeline:
                 self.process_replies()
 
                 # Periodic analysis check
-                if self.kb.should_run_analysis() and ANTHROPIC_API_KEY:
+                if self.kb.should_run_analysis() and LLM_PROVIDER != "none":
                     print("  Triggering periodic analysis...")
-                    self.kb.run_periodic_analysis(ANTHROPIC_API_KEY)
+                    self.kb.run_periodic_analysis("")
 
                 self._print_live_status()
                 time.sleep(120)
@@ -281,13 +353,22 @@ class HiringPipeline:
             print(f"  Conversations by round: {by_round}")
 
     def print_status(self):
-        print(f"\n{'='*60}")
+        sep = "=" * 60
+        print("")
+        print(sep)
         print("PIPELINE STATUS")
-        print(f"{'='*60}")
-        print(f"Database: {DB_PATH}")
-        print(f"Total candidates: {self.kb.get_candidate_count()}")
-        print(f"Current weights: {json.dumps(self.kb.get_current_weights(), indent=2)}")
-        print(f"Selenium first-approach rate: {self.kb.get_selenium_first_approach_pct()}%")
+        print(sep)
+
+        total = self.kb.get_candidate_count()
+        weights = self.kb.get_current_weights()
+        selenium_pct = self.kb.get_selenium_first_approach_pct()
+
+        print("Database         : " + DB_PATH)
+        print("Total candidates : " + str(total))
+        print("Scoring weights  :")
+        for k, v in weights.items():
+            print("  " + str(k) + " = " + str(v))
+        print("Selenium 1st     : " + str(selenium_pct) + "%")
 
         candidates = self.kb.get_all_candidates_summary()
         tier_counts = {}
@@ -296,25 +377,35 @@ class HiringPipeline:
             tier_counts[c["tier"]] = tier_counts.get(c["tier"], 0) + 1
             outcome_counts[c["final_outcome"]] = outcome_counts.get(c["final_outcome"], 0) + 1
 
-        print(f"\nTier breakdown: {tier_counts}")
-        print(f"Outcome breakdown: {outcome_counts}")
+        print("")
+        print("Tier breakdown   : " + str(tier_counts))
+        print("Outcome breakdown: " + str(outcome_counts))
 
         top3 = self.kb.get_top_candidates_by_originality(3)
         if top3:
-            print(f"\nTop 3 original candidates:")
+            print("")
+            print("Top 3 by originality:")
             for c in top3:
-                print(f"  {c['name']} — score: {c['initial_score']}, rounds: {c['rounds_completed']}")
+                print("  " + c["name"] + " — score=" + str(c["initial_score"]) + " rounds=" + str(c["rounds_completed"]))
 
-        print(f"\nTop AI phrases detected:")
-        for p in self.kb.get_top_patterns("ai_phrase", 5):
-            print(f"  '{p['value']}' — seen {p['frequency']}x")
-
+        phrases = self.kb.get_top_patterns("ai_phrase", 5)
+        if phrases:
+            print("")
+            print("Top AI phrases detected:")
+            for p in phrases:
+                print("  [" + str(p["frequency"]) + "x] " + p["value"])
+        print("")
 
 # ------------------------------------------------------------------ #
 # CLI
 # ------------------------------------------------------------------ #
 def main():
     parser = argparse.ArgumentParser(description="GenoTek Autonomous Hiring Agent")
+    parser.add_argument("--fetch", action="store_true", help="Fetch candidates from ATS (set ATS_SOURCE env var)")
+    parser.add_argument("--source", default=None, choices=["greenhouse","lever","workable","csv","mock"], help="ATS source for --fetch")
+    parser.add_argument("--count", type=int, default=100, help="Mock candidate count (default: 100)")
+    parser.add_argument("--raw-output", default="candidates_raw.csv", help="Output CSV from --fetch")
+    parser.add_argument("--full-run", action="store_true", help="Full pipeline: fetch + score + engage")
     parser.add_argument("--score", metavar="CSV", help="Score applicants from a CSV file")
     parser.add_argument("--output", default="scored_candidates.csv", help="Output CSV path")
     parser.add_argument("--engage", metavar="CSV", help="Send opening emails to top candidates")
@@ -333,6 +424,16 @@ def main():
 
     pipeline = HiringPipeline()
 
+    if args.fetch:
+        pipeline.fetch_candidates(
+            source=args.source,
+            output_csv=args.raw_output,
+            mock_count=args.count,
+        )
+
+    if args.full_run:
+        pipeline.full_run(source=args.source or "mock", count=args.count)
+
     if args.score:
         if not Path(args.score).exists():
             print(f"Error: {args.score} not found")
@@ -350,17 +451,17 @@ def main():
         pipeline.run_live()
 
     if args.analyze:
-        if not ANTHROPIC_API_KEY:
-            print("Set ANTHROPIC_API_KEY for LLM-powered analysis.")
+        if LLM_PROVIDER == "none":
+            print("Set GEMINI_API_KEY for LLM-powered analysis.")
         else:
-            insights = pipeline.kb.run_periodic_analysis(ANTHROPIC_API_KEY)
+            insights = pipeline.kb.run_periodic_analysis("")
             print(json.dumps(insights, indent=2) if insights else "No analysis triggered (not enough new candidates).")
 
     if args.query:
-        if not ANTHROPIC_API_KEY:
-            print("Set ANTHROPIC_API_KEY to use natural language queries.")
+        if LLM_PROVIDER == "none":
+            print("Set GEMINI_API_KEY to use natural language queries.")
         else:
-            answer = pipeline.kb.query(args.query, ANTHROPIC_API_KEY)
+            answer = pipeline.kb.query(args.query, "")
             print(f"\nAnswer: {answer}")
 
     if args.status:

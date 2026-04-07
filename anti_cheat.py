@@ -27,11 +27,7 @@ except ImportError:
     print("Warning: sentence-transformers not installed. Embedding-based checks disabled.")
     print("  Install with: pip install sentence-transformers")
 
-try:
-    import anthropic
-    ANTHROPIC_AVAILABLE = True
-except ImportError:
-    ANTHROPIC_AVAILABLE = False
+from llm_client import llm_complete, LLM_PROVIDER, llm_status
 
 # ------------------------------------------------------------------ #
 # Configuration
@@ -70,6 +66,169 @@ AI_FINGERPRINTS = [
 ]
 
 # ------------------------------------------------------------------ #
+# Reference Answer Cache
+# ------------------------------------------------------------------ #
+# Pre-generated LLM reference answers for each screening question.
+# These are stored here so Check 2 (embedding similarity) works even
+# without an API key at runtime. Generated once, reused forever.
+#
+# How to regenerate: python anti_cheat.py --generate-cache
+# Each entry: question_hash → LLM-generated answer text
+# ------------------------------------------------------------------ #
+
+# Built-in cache of typical screening question answers.
+# Covers the most common question GenoTek uses (and similar hiring systems).
+BUILTIN_REFERENCE_CACHE = {
+    # Q: reCAPTCHA / scraping approach
+    "recaptcha_scraping": (
+        "I would start by inspecting the network requests using browser DevTools "
+        "to understand the authentication flow. For reCAPTCHA v3, the token is "
+        "generated from behavioral signals including mouse movement and timing. "
+        "I would try Playwright with stealth plugins first, then if blocked, use "
+        "curl-impersonate to replicate the TLS fingerprint. Session cookies are "
+        "typically IP-bound, so I would route requests through a dedicated "
+        "residential proxy with sticky sessions. I would implement rate limiting "
+        "at 2 requests per second to avoid detection patterns."
+    ),
+    # Q: scoring/ranking 1000+ candidates
+    "candidate_scoring": (
+        "I would build a multi-factor scoring algorithm using Python and pandas. "
+        "Key signals: technical skills mentioned weighted by relevance, answer "
+        "quality measured by specificity and named tools, GitHub profile quality "
+        "via API check for active repos and commits, and completeness of application. "
+        "I would use sentence-transformers for embedding-based quality scoring and "
+        "cosine similarity against ideal answers. Output would be a ranked CSV with "
+        "tier labels: Fast-Track, Standard, Review, Reject."
+    ),
+    # Q: detecting AI-generated answers
+    "ai_detection": (
+        "I would use a multi-layered approach. First, regex pattern matching for "
+        "common AI fingerprints like certain phrases. Second, embed both the "
+        "candidate answer and a fresh LLM answer using sentence-transformers and "
+        "compute cosine similarity - above 80% indicates AI generation. Third, "
+        "timing analysis - a 200-word response in under 2 minutes is suspicious. "
+        "Fourth, cross-candidate pairwise similarity to catch copy rings."
+    ),
+    # Q: autonomous email system
+    "email_automation": (
+        "I would use the Gmail API with OAuth 2.0 for sending and receiving emails. "
+        "Thread tracking via Gmail thread IDs ensures conversations stay organized. "
+        "For reply generation I would use an LLM with a system prompt that includes "
+        "the candidate's previous answers and instructs it to ask a specific follow-up. "
+        "State would be persisted in SQLite so the system survives restarts. "
+        "Polling every 2 minutes with exponential backoff on errors."
+    ),
+    # Generic fallback - catches most AI-generated job application answers
+    "generic_job_application": (
+        "I have strong experience with Python and relevant frameworks. I am passionate "
+        "about this role and believe my skills align well with your requirements. "
+        "I have worked on similar projects and delivered results. I am a quick learner "
+        "and team player who thrives in fast-paced environments. I would leverage my "
+        "experience to contribute immediately and grow with the company."
+    ),
+}
+
+
+def get_question_cache_key(question: str) -> str:
+    """Map a question to its closest cache key based on keyword matching."""
+    q = question.lower()
+    if any(w in q for w in ["recaptcha", "scraping", "captcha", "selenium", "playwright", "bot"]):
+        return "recaptcha_scraping"
+    if any(w in q for w in ["score", "rank", "1000", "1140", "candidates", "filter"]):
+        return "candidate_scoring"
+    if any(w in q for w in ["ai", "chatgpt", "detect", "generated", "cheat"]):
+        return "ai_detection"
+    if any(w in q for w in ["email", "gmail", "message", "conversation", "reply"]):
+        return "email_automation"
+    return "generic_job_application"
+
+
+class ReferenceAnswerCache:
+    """
+    Manages reference answers used for AI similarity detection.
+    
+    Priority order:
+      1. DB cache (answers generated by live LLM and stored)
+      2. Built-in cache (pre-written reference answers above)
+      3. None (skip Check 2)
+    
+    This means Check 2 works even with no API key, using the
+    built-in cache as baseline.
+    """
+
+    def __init__(self, db_path: str = "hiring_agent.db"):
+        self.db_path = db_path
+        self._init_db()
+
+    def _init_db(self):
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS reference_answers (
+                    question_hash TEXT PRIMARY KEY,
+                    question_text TEXT,
+                    reference_answer TEXT,
+                    generated_by TEXT,
+                    created_at TEXT
+                )
+            """)
+            conn.commit()
+
+    def get(self, question: str) -> Optional[str]:
+        """
+        Get a reference answer for a question.
+        Checks DB first (live LLM answers), then built-in cache.
+        """
+        import hashlib
+        q_hash = hashlib.md5(question.strip().lower().encode()).hexdigest()[:12]
+
+        # 1. Check DB cache
+        with sqlite3.connect(self.db_path) as conn:
+            row = conn.execute(
+                "SELECT reference_answer FROM reference_answers WHERE question_hash = ?",
+                (q_hash,)
+            ).fetchone()
+        if row:
+            return row[0]
+
+        # 2. Fall back to built-in cache (keyword matching)
+        cache_key = get_question_cache_key(question)
+        return BUILTIN_REFERENCE_CACHE.get(cache_key)
+
+    def store(self, question: str, reference_answer: str, generated_by: str = "llm"):
+        """Store a freshly generated LLM answer in DB for future reuse."""
+        import hashlib
+        q_hash = hashlib.md5(question.strip().lower().encode()).hexdigest()[:12]
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("""
+                INSERT OR REPLACE INTO reference_answers
+                (question_hash, question_text, reference_answer, generated_by, created_at)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                q_hash, question[:500], reference_answer, generated_by,
+                datetime.now(timezone.utc).isoformat()
+            ))
+            conn.commit()
+
+    def generate_and_store(self, question: str, api_key: str) -> Optional[str]:
+        """
+        Generate a fresh LLM reference answer and store it in DB.
+        Returns the answer, or falls back to built-in cache if API fails.
+        """
+        if LLM_PROVIDER != "none":
+            answer = generate_llm_reference_answer(question)
+            if answer:
+                self.store(question, answer, generated_by="claude")
+                print(f"  Cached LLM reference answer for question (hash stored)")
+                return answer
+
+        # Fall back to built-in cache — always returns something
+        fallback = self.get(question)
+        if fallback:
+            print(f"  Using built-in reference answer (no API key or API failed)")
+        return fallback
+
+
+# ------------------------------------------------------------------ #
 # Data classes
 # ------------------------------------------------------------------ #
 @dataclass
@@ -102,8 +261,15 @@ def get_embedding_model(model_name: str = "all-MiniLM-L6-v2"):
     if not EMBEDDINGS_AVAILABLE:
         return None
     if model_name not in _model_cache:
-        print(f"Loading embedding model: {model_name}")
-        _model_cache[model_name] = SentenceTransformer(model_name)
+        try:
+            print(f"  Loading embedding model: {model_name} (first run downloads ~80MB)...")
+            _model_cache[model_name] = SentenceTransformer(model_name)
+            print(f"  Embedding model loaded.")
+        except Exception as e:
+            print(f"  Could not load embedding model: {e}")
+            print(f"  Embedding similarity check will be skipped this run.")
+            print(f"  Fix: ensure internet access and run: pip install sentence-transformers")
+            _model_cache[model_name] = None
     return _model_cache[model_name]
 
 
@@ -208,31 +374,17 @@ def check_ai_similarity_embedding(
     )
 
 
-def generate_llm_reference_answer(question: str, api_key: str) -> Optional[str]:
+def generate_llm_reference_answer(question: str, api_key: str = "") -> Optional[str]:
     """
-    Get a fresh LLM answer to use as comparison baseline.
-    Strips personal context from the question before sending.
+    Get a fresh LLM answer via the unified llm_client (Gemini or Anthropic).
+    api_key param kept for backwards compatibility but not used directly —
+    key is read from GEMINI_API_KEY environment variable.
     """
-    if not ANTHROPIC_AVAILABLE:
-        return None
-
-    client = anthropic.Anthropic(api_key=api_key)
-    try:
-        msg = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=500,
-            messages=[{
-                "role": "user",
-                "content": (
-                    f"Answer this question concisely as a job applicant would:\n\n{question}\n\n"
-                    "Be direct and specific. Do not introduce yourself."
-                )
-            }]
-        )
-        return msg.content[0].text
-    except Exception as e:
-        print(f"LLM reference generation failed: {e}")
-        return None
+    return llm_complete(
+        system="You are a job applicant. Answer concisely and specifically. Do not introduce yourself.",
+        user=f"Answer this question:\n\n{question}",
+        max_tokens=500,
+    )
 
 
 # ------------------------------------------------------------------ #
@@ -441,9 +593,9 @@ class StrikeSystem:
 # Full Pipeline
 # ------------------------------------------------------------------ #
 class AntiCheatPipeline:
-    def __init__(self, db_path: str = "hiring_agent.db", anthropic_api_key: str = ""):
+    def __init__(self, db_path: str = "hiring_agent.db"):
         self.strike_system = StrikeSystem(db_path)
-        self.anthropic_api_key = anthropic_api_key
+        self.ref_cache = ReferenceAnswerCache(db_path)
 
     def evaluate(
         self,
@@ -474,12 +626,14 @@ class AntiCheatPipeline:
                 phrase_result.evidence,
             )
 
-        # Check 2: LLM similarity (requires embedding model)
-        if EMBEDDINGS_AVAILABLE and self.anthropic_api_key:
-            llm_answer = generate_llm_reference_answer(question, self.anthropic_api_key)
-            if llm_answer:
+        # Check 2: Embedding similarity vs reference answer
+        # Works with OR without API key — uses cache fallback when no key provided
+        if EMBEDDINGS_AVAILABLE:
+            # Try live LLM first, fall back to built-in cache automatically
+            ref_answer = self.ref_cache.generate_and_store(question, "")
+            if ref_answer:
                 sim_result = check_ai_similarity_embedding(
-                    candidate_id, question, answer, llm_answer
+                    candidate_id, question, answer, ref_answer
                 )
                 all_results.append(sim_result)
                 if sim_result.is_flagged:
@@ -488,6 +642,14 @@ class AntiCheatPipeline:
                         sim_result.explanation,
                         sim_result.evidence,
                     )
+            else:
+                all_results.append(DetectionResult(
+                    candidate_id=candidate_id,
+                    check_type="ai_similarity",
+                    is_flagged=False,
+                    score=0.0,
+                    explanation="No reference answer available — similarity check skipped",
+                ))
 
         # Check 4: Timing (if timestamps provided)
         if question_sent_at and answer_received_at:
@@ -529,8 +691,7 @@ if __name__ == "__main__":
 
     pipeline = AntiCheatPipeline(
         db_path="demo_hiring.db",
-        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
-    )
+        )
 
     question = "How would you approach scraping a website protected by reCAPTCHA Enterprise?"
 

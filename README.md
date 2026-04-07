@@ -11,7 +11,7 @@ CSV / Internshala Export
         │
         ▼
 ┌───────────────┐        ┌──────────────────┐
-│  scorer.py    │──────▶│ learning_system  │
+│  scorer.py    │──────▶│ learning_system   │
 │  (Component 2)│        │ (Component 5)    │
 │               │        │                  │
 │ - Skill score │        │ - SQLite KB      │

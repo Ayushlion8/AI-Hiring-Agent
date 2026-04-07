@@ -227,16 +227,33 @@ def compute_completeness(row: pd.Series, answer_columns: list) -> float:
     return (filled / len(answer_columns)) * 10.0
 
 
-def assign_tier(score: float) -> str:
-    """Convert numeric score to tier label."""
-    if score >= 75:
-        return "Fast-Track"
-    elif score >= 55:
-        return "Standard"
-    elif score >= 35:
-        return "Review"
+def assign_tier(score: float, check_github: bool = False) -> str:
+    """
+    Convert numeric score to tier label.
+    Thresholds are calibrated for real ATS data with GitHub API enabled.
+    Without GitHub API (check_github=False), effective max is ~66, so we
+    scale down proportionally: Fast-Track>=60, Standard>=44, Review>=28.
+    """
+    if check_github:
+        # Full scoring with live GitHub data — original thresholds
+        if score >= 75:
+            return "Fast-Track"
+        elif score >= 55:
+            return "Standard"
+        elif score >= 35:
+            return "Review"
+        else:
+            return "Reject"
     else:
-        return "Reject"
+        # No GitHub API — lower ceiling, adjusted thresholds
+        if score >= 60:
+            return "Fast-Track"
+        elif score >= 44:
+            return "Standard"
+        elif score >= 25:
+            return "Review"
+        else:
+            return "Reject"
 
 
 def score_candidates(
@@ -322,7 +339,7 @@ def score_candidates(
         # Normalize to 0–100
         cs.raw_score = max(0.0, min(100.0, cs.raw_score * (100 / 80)))
 
-        cs.tier = assign_tier(cs.raw_score)
+        cs.tier = assign_tier(cs.raw_score, check_github_api)
         cs.breakdown = {
             "skill_score": round(cs.skill_score, 2),
             "answer_quality": round(cs.answer_quality_score, 2),
@@ -358,6 +375,12 @@ def score_candidates(
 
     out_df = pd.DataFrame(out_rows)
     out_df.to_csv(output_csv, index=False)
+
+    if out_df.empty:
+        if verbose:
+            print(f"\nNo candidates to score in {input_csv}.")
+            print("If using --full-run, delete hiring_agent.db to clear duplicate cache and retry.")
+        return out_df
 
     if verbose:
         tier_counts = out_df["tier"].value_counts().to_dict()
