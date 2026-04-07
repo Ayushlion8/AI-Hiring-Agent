@@ -60,7 +60,7 @@ A real-time interactive dashboard to monitor the entire AI hiring pipeline — f
 
 ### 📊 Dashboard Overview
 
-![Dashboard](./assets/dashboard.png)
+![Dashboard](frontend/assets/dashboard.png)
 
 - Total candidates processed in real-time
 - Tier distribution (Fast-Track, Standard, Review, Reject)
@@ -71,7 +71,7 @@ A real-time interactive dashboard to monitor the entire AI hiring pipeline — f
 
 ### ⚡ Pipeline Execution
 
-![Pipeline](./assets/pipeline.png)
+![Pipeline](frontend/assets/pipeline.png)
 
 - Run full pipeline with one click
 - Supports mock / CSV / ATS integrations
@@ -82,7 +82,7 @@ A real-time interactive dashboard to monitor the entire AI hiring pipeline — f
 
 ### 📜 Live Logs & Anti-Cheat Detection
 
-![Logs](./assets/logs.png)
+![Logs](frontend/assets/logs.png)
 
 - Streaming logs during execution
 - AI fingerprint detection in candidate answers
@@ -93,8 +93,8 @@ A real-time interactive dashboard to monitor the entire AI hiring pipeline — f
 
 ### 👥 Candidate Management
 
-![Candidates](./assets/candidates1.png)
-![Candidates](./assets/candidates2.png)
+![Candidates](frontend/assets/candidates1.png)
+![Candidates](frontend/assets/candidates2.png)
 
 - Ranked candidate list with scores
 - Tier-based filtering (Fast-Track, Standard, etc.)
@@ -105,7 +105,7 @@ A real-time interactive dashboard to monitor the entire AI hiring pipeline — f
 
 ### 🛡️ Anti-Cheat System
 
-![AntiCheat](./assets/anticheat.png)
+![AntiCheat](frontend/assets/anticheat.png)
 
 - Detect AI-generated answers in real-time
 - Pattern-based + embedding-based detection
@@ -116,7 +116,7 @@ A real-time interactive dashboard to monitor the entire AI hiring pipeline — f
 
 ### 📈 Analytics & Insights
 
-![Analytics](./assets/analytics.png)
+![Analytics](frontend/assets/analytics.png)
 
 - Top-performing candidates leaderboard
 - Score distribution insights
@@ -127,7 +127,7 @@ A real-time interactive dashboard to monitor the entire AI hiring pipeline — f
 
 ### 🤖 AI Query System (LLM Integration)
 
-![LLM](./assets/llm.png)
+![LLM](frontend/assets/llm.png)
 
 - Ask questions like:
   - “Which candidates showed the most original thinking?”
