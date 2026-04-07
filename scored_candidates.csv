@@ -1,112 +1,103 @@
 rank,name,email,score,tier,skill_score,answer_quality,github_score,completeness,ai_penalty,flags
 1,Nikhil Khanna,nikhil.khanna1@gmail.com,66.9,Fast-Track,20.0,4.75,2.0,10.0,0.0,
-2,Siddharth Shah,siddharth.shah104@bits-pilani.ac.in,66.9,Fast-Track,20.0,4.75,2.0,10.0,0.0,
-3,Diana Johnson,diana.johnson5@outlook.com,65.9,Fast-Track,20.0,4.35,2.0,10.0,0.0,
-4,Kavya Reddy,kavya.reddy72@yahoo.com,65.9,Fast-Track,20.0,4.35,2.0,10.0,0.0,
-5,Rahul Verma,rahul.verma28@outlook.com,63.1,Fast-Track,18.0,4.75,2.0,10.0,0.0,
-6,Tanvi Mishra,tanvi.mishra32@example.com,63.1,Fast-Track,18.0,4.75,2.0,10.0,0.0,
-7,Ananya Kumar,ananya.kumar66@yahoo.com,63.1,Fast-Track,18.0,4.75,2.0,10.0,0.0,
-8,Meera Pillai,meera.pillai30@hotmail.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
-9,Arjun Singh,arjun.singh35@bits-pilani.ac.in,60.8,Fast-Track,19.0,3.05,2.0,10.0,0.0,
-10,Charlie Smith,charlie.smith47@gmail.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
-11,Vikram Rao,vikram.rao50@yahoo.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
-12,Arjun Singh,arjun.singh93@bits-pilani.ac.in,60.8,Fast-Track,19.0,3.05,2.0,10.0,0.0,
-13,Aditya Bose,aditya.bose94@outlook.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
-14,Priya Patel,priya.patel40@gmail.com,60.2,Fast-Track,17.0,4.35,2.0,10.0,0.0,
-15,Shreya Tiwari,shreya.tiwari85@iitd.ac.in,60.2,Fast-Track,17.0,4.35,2.0,10.0,0.0,
-16,Ishaan Nair,ishaan.nair43@example.com,57.4,Standard,18.0,2.45,2.0,10.0,0.0,
-17,Pooja Agarwal,pooja.agarwal45@example.com,57.4,Standard,18.0,2.45,2.0,10.0,0.0,
-18,Aarav Sharma,aarav.sharma73@gmail.com,57.4,Standard,18.0,2.45,2.0,10.0,0.0,
-19,Kavya Reddy,kavya.reddy22@gmail.com,53.8,Standard,13.0,4.75,2.0,10.0,0.0,
-20,Sneha Gupta,sneha.gupta15@hotmail.com,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
-21,Pooja Agarwal,pooja.agarwal48@yahoo.com,53.2,Standard,15.0,3.05,2.0,10.0,0.0,
-22,Arjun Singh,arjun.singh67@bits-pilani.ac.in,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
-23,Rohan Das,rohan.das74@yahoo.com,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
-24,Aditya Bose,aditya.bose75@gmail.com,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
-25,Kavya Reddy,kavya.reddy97@outlook.com,53.2,Standard,15.0,3.05,2.0,10.0,0.0,
-26,Bob Martinez,bob.martinez26@bits-pilani.ac.in,52.8,Standard,13.0,4.35,2.0,10.0,0.0,
-27,Rahul Verma,rahul.verma23@bits-pilani.ac.in,51.9,Standard,12.0,4.75,2.0,10.0,0.0,
-28,Divya Mehta,divya.mehta17@iitd.ac.in,51.4,Standard,15.0,2.3,2.0,10.0,0.0,
-29,Sneha Gupta,sneha.gupta44@hotmail.com,51.4,Standard,15.0,2.3,2.0,10.0,0.0,
-30,Meera Pillai,meera.pillai11@bits-pilani.ac.in,49.5,Standard,14.0,2.3,2.0,10.0,0.0,
-31,Bob Martinez,bob.martinez20@outlook.com,49.5,Standard,14.0,2.3,2.0,10.0,0.0,
-32,Ananya Kumar,ananya.kumar38@bits-pilani.ac.in,49.5,Standard,13.0,3.05,2.0,10.0,0.0,
-33,Divya Mehta,divya.mehta92@hotmail.com,49.5,Standard,13.0,3.05,2.0,10.0,0.0,
-34,Meera Pillai,meera.pillai95@outlook.com,48.1,Standard,10.0,4.75,2.0,10.0,0.0,
-35,Alice Chen,alice.chen9@bits-pilani.ac.in,48.0,Standard,13.0,2.45,2.0,10.0,0.0,
-36,Sneha Gupta,sneha.gupta7@outlook.com,47.6,Standard,13.0,2.3,2.0,10.0,0.0,
-37,Shreya Tiwari,shreya.tiwari36@gmail.com,47.6,Standard,13.0,2.3,2.0,10.0,0.0,
-38,Alice Chen,alice.chen49@iitd.ac.in,47.6,Standard,12.0,3.05,2.0,10.0,0.0,
-39,Rohan Das,rohan.das51@outlook.com,47.6,Standard,12.0,3.05,2.0,10.0,0.0,
-40,Shreya Tiwari,shreya.tiwari69@outlook.com,47.6,Standard,13.0,2.3,2.0,10.0,0.0,
-41,Pooja Agarwal,pooja.agarwal90@gmail.com,47.6,Standard,12.0,3.05,2.0,10.0,0.0,
-42,Priya Patel,priya.patel108@outlook.com,47.6,Standard,13.0,2.3,2.0,10.0,0.0,
-43,Sneha Gupta,sneha.gupta18@hotmail.com,45.8,Standard,11.0,3.05,2.0,10.0,0.0,
-44,Bob Martinez,bob.martinez34@iitd.ac.in,45.8,Standard,12.0,2.3,2.0,10.0,0.0,
-45,Rohan Das,rohan.das4@gmail.com,43.9,Review,11.0,2.3,2.0,10.0,0.0,
-46,Alice Chen,alice.chen80@yahoo.com,43.9,Review,11.0,2.3,2.0,10.0,0.0,
-47,Shreya Tiwari,shreya.tiwari84@hotmail.com,43.9,Review,11.0,2.3,2.0,10.0,0.0,
-48,Alice Chen,alice.chen0@gmail.com,42.0,Review,9.0,3.05,2.0,10.0,0.0,
-49,Bob Martinez,bob.martinez33@example.com,42.0,Review,9.0,3.05,2.0,10.0,0.0,
-50,Kavya Reddy,kavya.reddy63@bits-pilani.ac.in,42.0,Review,10.0,2.3,2.0,10.0,0.0,
-51,Eve Wilson,eve.wilson76@bits-pilani.ac.in,42.0,Review,9.0,3.05,2.0,10.0,0.0,
-52,Alice Chen,alice.chen110@outlook.com,42.0,Review,9.0,3.05,2.0,10.0,0.0,
-53,Ishaan Nair,ishaan.nair6@iitd.ac.in,40.0,Review,15.0,0.25,2.0,5.0,0.0,
-54,Aarav Sharma,aarav.sharma59@gmail.com,38.6,Review,8.0,2.45,2.0,10.0,0.0,
-55,Siddharth Shah,siddharth.shah68@outlook.com,38.6,Review,8.0,2.45,2.0,10.0,0.0,
-56,Rahul Verma,rahul.verma19@gmail.com,36.4,Review,7.0,2.3,2.0,10.0,0.0,
-57,Pooja Agarwal,pooja.agarwal29@yahoo.com,34.9,Review,6.0,2.45,2.0,10.0,0.0,
-58,Rohan Das,rohan.das46@example.com,34.9,Review,6.0,2.45,2.0,10.0,0.0,
-59,Charlie Smith,charlie.smith62@iitd.ac.in,34.9,Review,6.0,2.45,2.0,10.0,0.0,
-60,Rohan Das,rohan.das10@outlook.com,34.5,Review,6.0,2.3,2.0,10.0,0.0,
-61,Arjun Singh,arjun.singh77@outlook.com,34.5,Review,6.0,2.3,2.0,10.0,0.0,
-62,Karan Joshi,karan.joshi31@gmail.com,33.1,Review,15.0,0.0,2.0,0.0,0.0,
-63,Eve Wilson,eve.wilson16@yahoo.com,32.6,Review,4.0,3.05,2.0,10.0,0.0,
-64,Eve Wilson,eve.wilson21@bits-pilani.ac.in,32.6,Review,5.0,2.3,2.0,10.0,0.0,
-65,Vikram Rao,vikram.rao39@hotmail.com,32.6,Review,5.0,2.3,2.0,10.0,0.0,
-66,Ananya Kumar,ananya.kumar54@bits-pilani.ac.in,32.6,Review,4.0,3.05,2.0,10.0,0.0,
-67,Karan Joshi,karan.joshi57@iitd.ac.in,32.6,Review,4.0,3.05,2.0,10.0,0.0,
-68,Aarav Sharma,aarav.sharma14@bits-pilani.ac.in,30.8,Review,4.0,2.3,2.0,10.0,0.0,
-69,Bob Martinez,bob.martinez53@hotmail.com,30.8,Review,4.0,2.3,2.0,10.0,0.0,
-70,Pooja Agarwal,pooja.agarwal37@hotmail.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
-71,Vikram Rao,vikram.rao41@yahoo.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
-72,Siddharth Shah,siddharth.shah52@gmail.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
-73,Siddharth Shah,siddharth.shah70@iitd.ac.in,25.6,Review,11.0,0.0,2.0,0.0,0.0,
-74,Shreya Tiwari,shreya.tiwari81@example.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
-75,Divya Mehta,divya.mehta107@hotmail.com,24.4,Reject,7.0,0.0,2.0,5.0,0.0,
-76,Ananya Kumar,ananya.kumar100@bits-pilani.ac.in,23.1,Reject,6.0,0.25,2.0,5.0,0.0,
-77,Ishaan Nair,ishaan.nair86@example.com,21.2,Reject,5.0,0.25,2.0,5.0,0.0,
-78,Sneha Gupta,sneha.gupta98@example.com,18.1,Reject,7.0,0.0,2.0,0.0,0.0,
-79,Eve Wilson,eve.wilson61@example.com,16.2,Reject,6.0,0.0,2.0,0.0,0.0,
-80,Alice Chen,alice.chen58@iitd.ac.in,14.4,Reject,5.0,0.0,2.0,0.0,0.0,
-81,Karan Joshi,karan.joshi87@gmail.com,11.5,Reject,18.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-82,Aarav Sharma,aarav.sharma109@bits-pilani.ac.in,11.5,Reject,18.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-83,Siddharth Shah,siddharth.shah71@outlook.com,11.2,Reject,0.0,0.0,2.0,5.0,0.0,
-84,Shreya Tiwari,shreya.tiwari12@outlook.com,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-85,Alice Chen,alice.chen60@iitd.ac.in,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-86,Aarav Sharma,aarav.sharma79@hotmail.com,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-87,Aditya Bose,aditya.bose91@hotmail.com,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-88,Tanvi Mishra,tanvi.mishra64@outlook.com,5.9,Reject,15.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-89,Pooja Agarwal,pooja.agarwal65@example.com,5.9,Reject,15.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-90,Ananya Kumar,ananya.kumar103@bits-pilani.ac.in,5.9,Reject,15.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-91,Ishaan Nair,ishaan.nair78@yahoo.com,5.0,Reject,0.0,0.0,2.0,0.0,0.0,
-92,Charlie Smith,charlie.smith42@yahoo.com,4.0,Reject,14.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-93,Nikhil Khanna,nikhil.khanna2@yahoo.com,0.0,Reject,4.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-94,Aarav Sharma,aarav.sharma3@example.com,0.0,Reject,4.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-95,Charlie Smith,charlie.smith8@bits-pilani.ac.in,0.0,Reject,9.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-96,Bob Martinez,bob.martinez13@outlook.com,0.0,Reject,12.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-97,Tanvi Mishra,tanvi.mishra24@yahoo.com,0.0,Reject,7.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-98,Siddharth Shah,siddharth.shah25@yahoo.com,0.0,Reject,12.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-99,Pooja Agarwal,pooja.agarwal27@yahoo.com,0.0,Reject,13.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-100,Meera Pillai,meera.pillai55@bits-pilani.ac.in,0.0,Reject,13.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-101,Ananya Kumar,ananya.kumar56@hotmail.com,0.0,Reject,6.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-102,Aarav Sharma,aarav.sharma82@example.com,0.0,Reject,7.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-103,Divya Mehta,divya.mehta83@bits-pilani.ac.in,0.0,Reject,8.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-104,Kavya Reddy,kavya.reddy88@example.com,0.0,Reject,7.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-105,Aditya Bose,aditya.bose89@iitd.ac.in,0.0,Reject,1.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-106,Ananya Kumar,ananya.kumar96@gmail.com,0.0,Reject,9.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-107,Rahul Verma,rahul.verma99@yahoo.com,0.0,Reject,4.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-108,Shreya Tiwari,shreya.tiwari101@bits-pilani.ac.in,0.0,Reject,7.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
-109,Arjun Singh,arjun.singh102@gmail.com,0.0,Reject,8.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-110,Vikram Rao,vikram.rao105@iitd.ac.in,0.0,Reject,13.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
-111,Siddharth Shah,siddharth.shah106@bits-pilani.ac.in,0.0,Reject,7.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+2,Diana Johnson,diana.johnson5@outlook.com,65.9,Fast-Track,20.0,4.35,2.0,10.0,0.0,
+3,Kavya Reddy,kavya.reddy72@yahoo.com,65.9,Fast-Track,20.0,4.35,2.0,10.0,0.0,
+4,Rahul Verma,rahul.verma28@outlook.com,63.1,Fast-Track,18.0,4.75,2.0,10.0,0.0,
+5,Tanvi Mishra,tanvi.mishra32@example.com,63.1,Fast-Track,18.0,4.75,2.0,10.0,0.0,
+6,Ananya Kumar,ananya.kumar66@yahoo.com,63.1,Fast-Track,18.0,4.75,2.0,10.0,0.0,
+7,Meera Pillai,meera.pillai30@hotmail.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
+8,Arjun Singh,arjun.singh35@bits-pilani.ac.in,60.8,Fast-Track,19.0,3.05,2.0,10.0,0.0,
+9,Charlie Smith,charlie.smith47@gmail.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
+10,Vikram Rao,vikram.rao50@yahoo.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
+11,Arjun Singh,arjun.singh93@bits-pilani.ac.in,60.8,Fast-Track,19.0,3.05,2.0,10.0,0.0,
+12,Aditya Bose,aditya.bose94@outlook.com,60.8,Fast-Track,20.0,2.3,2.0,10.0,0.0,
+13,Priya Patel,priya.patel40@gmail.com,60.2,Fast-Track,17.0,4.35,2.0,10.0,0.0,
+14,Shreya Tiwari,shreya.tiwari85@iitd.ac.in,60.2,Fast-Track,17.0,4.35,2.0,10.0,0.0,
+15,Ishaan Nair,ishaan.nair43@example.com,57.4,Standard,18.0,2.45,2.0,10.0,0.0,
+16,Pooja Agarwal,pooja.agarwal45@example.com,57.4,Standard,18.0,2.45,2.0,10.0,0.0,
+17,Aarav Sharma,aarav.sharma73@gmail.com,57.4,Standard,18.0,2.45,2.0,10.0,0.0,
+18,Kavya Reddy,kavya.reddy22@gmail.com,53.8,Standard,13.0,4.75,2.0,10.0,0.0,
+19,Sneha Gupta,sneha.gupta15@hotmail.com,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
+20,Pooja Agarwal,pooja.agarwal48@yahoo.com,53.2,Standard,15.0,3.05,2.0,10.0,0.0,
+21,Arjun Singh,arjun.singh67@bits-pilani.ac.in,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
+22,Rohan Das,rohan.das74@yahoo.com,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
+23,Aditya Bose,aditya.bose75@gmail.com,53.2,Standard,16.0,2.3,2.0,10.0,0.0,
+24,Kavya Reddy,kavya.reddy97@outlook.com,53.2,Standard,15.0,3.05,2.0,10.0,0.0,
+25,Bob Martinez,bob.martinez26@bits-pilani.ac.in,52.8,Standard,13.0,4.35,2.0,10.0,0.0,
+26,Rahul Verma,rahul.verma23@bits-pilani.ac.in,51.9,Standard,12.0,4.75,2.0,10.0,0.0,
+27,Divya Mehta,divya.mehta17@iitd.ac.in,51.4,Standard,15.0,2.3,2.0,10.0,0.0,
+28,Sneha Gupta,sneha.gupta44@hotmail.com,51.4,Standard,15.0,2.3,2.0,10.0,0.0,
+29,Meera Pillai,meera.pillai11@bits-pilani.ac.in,49.5,Standard,14.0,2.3,2.0,10.0,0.0,
+30,Bob Martinez,bob.martinez20@outlook.com,49.5,Standard,14.0,2.3,2.0,10.0,0.0,
+31,Ananya Kumar,ananya.kumar38@bits-pilani.ac.in,49.5,Standard,13.0,3.05,2.0,10.0,0.0,
+32,Divya Mehta,divya.mehta92@hotmail.com,49.5,Standard,13.0,3.05,2.0,10.0,0.0,
+33,Meera Pillai,meera.pillai95@outlook.com,48.1,Standard,10.0,4.75,2.0,10.0,0.0,
+34,Alice Chen,alice.chen9@bits-pilani.ac.in,48.0,Standard,13.0,2.45,2.0,10.0,0.0,
+35,Sneha Gupta,sneha.gupta7@outlook.com,47.6,Standard,13.0,2.3,2.0,10.0,0.0,
+36,Shreya Tiwari,shreya.tiwari36@gmail.com,47.6,Standard,13.0,2.3,2.0,10.0,0.0,
+37,Alice Chen,alice.chen49@iitd.ac.in,47.6,Standard,12.0,3.05,2.0,10.0,0.0,
+38,Rohan Das,rohan.das51@outlook.com,47.6,Standard,12.0,3.05,2.0,10.0,0.0,
+39,Shreya Tiwari,shreya.tiwari69@outlook.com,47.6,Standard,13.0,2.3,2.0,10.0,0.0,
+40,Pooja Agarwal,pooja.agarwal90@gmail.com,47.6,Standard,12.0,3.05,2.0,10.0,0.0,
+41,Sneha Gupta,sneha.gupta18@hotmail.com,45.8,Standard,11.0,3.05,2.0,10.0,0.0,
+42,Bob Martinez,bob.martinez34@iitd.ac.in,45.8,Standard,12.0,2.3,2.0,10.0,0.0,
+43,Rohan Das,rohan.das4@gmail.com,43.9,Review,11.0,2.3,2.0,10.0,0.0,
+44,Alice Chen,alice.chen80@yahoo.com,43.9,Review,11.0,2.3,2.0,10.0,0.0,
+45,Shreya Tiwari,shreya.tiwari84@hotmail.com,43.9,Review,11.0,2.3,2.0,10.0,0.0,
+46,Alice Chen,alice.chen0@gmail.com,42.0,Review,9.0,3.05,2.0,10.0,0.0,
+47,Bob Martinez,bob.martinez33@example.com,42.0,Review,9.0,3.05,2.0,10.0,0.0,
+48,Kavya Reddy,kavya.reddy63@bits-pilani.ac.in,42.0,Review,10.0,2.3,2.0,10.0,0.0,
+49,Eve Wilson,eve.wilson76@bits-pilani.ac.in,42.0,Review,9.0,3.05,2.0,10.0,0.0,
+50,Ishaan Nair,ishaan.nair6@iitd.ac.in,40.0,Review,15.0,0.25,2.0,5.0,0.0,
+51,Aarav Sharma,aarav.sharma59@gmail.com,38.6,Review,8.0,2.45,2.0,10.0,0.0,
+52,Siddharth Shah,siddharth.shah68@outlook.com,38.6,Review,8.0,2.45,2.0,10.0,0.0,
+53,Rahul Verma,rahul.verma19@gmail.com,36.4,Review,7.0,2.3,2.0,10.0,0.0,
+54,Pooja Agarwal,pooja.agarwal29@yahoo.com,34.9,Review,6.0,2.45,2.0,10.0,0.0,
+55,Rohan Das,rohan.das46@example.com,34.9,Review,6.0,2.45,2.0,10.0,0.0,
+56,Charlie Smith,charlie.smith62@iitd.ac.in,34.9,Review,6.0,2.45,2.0,10.0,0.0,
+57,Rohan Das,rohan.das10@outlook.com,34.5,Review,6.0,2.3,2.0,10.0,0.0,
+58,Arjun Singh,arjun.singh77@outlook.com,34.5,Review,6.0,2.3,2.0,10.0,0.0,
+59,Karan Joshi,karan.joshi31@gmail.com,33.1,Review,15.0,0.0,2.0,0.0,0.0,
+60,Eve Wilson,eve.wilson16@yahoo.com,32.6,Review,4.0,3.05,2.0,10.0,0.0,
+61,Eve Wilson,eve.wilson21@bits-pilani.ac.in,32.6,Review,5.0,2.3,2.0,10.0,0.0,
+62,Vikram Rao,vikram.rao39@hotmail.com,32.6,Review,5.0,2.3,2.0,10.0,0.0,
+63,Ananya Kumar,ananya.kumar54@bits-pilani.ac.in,32.6,Review,4.0,3.05,2.0,10.0,0.0,
+64,Karan Joshi,karan.joshi57@iitd.ac.in,32.6,Review,4.0,3.05,2.0,10.0,0.0,
+65,Aarav Sharma,aarav.sharma14@bits-pilani.ac.in,30.8,Review,4.0,2.3,2.0,10.0,0.0,
+66,Bob Martinez,bob.martinez53@hotmail.com,30.8,Review,4.0,2.3,2.0,10.0,0.0,
+67,Pooja Agarwal,pooja.agarwal37@hotmail.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
+68,Vikram Rao,vikram.rao41@yahoo.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
+69,Siddharth Shah,siddharth.shah52@gmail.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
+70,Siddharth Shah,siddharth.shah70@iitd.ac.in,25.6,Review,11.0,0.0,2.0,0.0,0.0,
+71,Shreya Tiwari,shreya.tiwari81@example.com,25.6,Review,11.0,0.0,2.0,0.0,0.0,
+72,Ananya Kumar,ananya.kumar100@bits-pilani.ac.in,23.1,Reject,6.0,0.25,2.0,5.0,0.0,
+73,Ishaan Nair,ishaan.nair86@example.com,21.2,Reject,5.0,0.25,2.0,5.0,0.0,
+74,Sneha Gupta,sneha.gupta98@example.com,18.1,Reject,7.0,0.0,2.0,0.0,0.0,
+75,Eve Wilson,eve.wilson61@example.com,16.2,Reject,6.0,0.0,2.0,0.0,0.0,
+76,Alice Chen,alice.chen58@iitd.ac.in,14.4,Reject,5.0,0.0,2.0,0.0,0.0,
+77,Karan Joshi,karan.joshi87@gmail.com,11.5,Reject,18.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+78,Siddharth Shah,siddharth.shah71@outlook.com,11.2,Reject,0.0,0.0,2.0,5.0,0.0,
+79,Shreya Tiwari,shreya.tiwari12@outlook.com,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+80,Alice Chen,alice.chen60@iitd.ac.in,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+81,Aarav Sharma,aarav.sharma79@hotmail.com,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+82,Aditya Bose,aditya.bose91@hotmail.com,9.1,Reject,15.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+83,Tanvi Mishra,tanvi.mishra64@outlook.com,5.9,Reject,15.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+84,Pooja Agarwal,pooja.agarwal65@example.com,5.9,Reject,15.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+85,Ishaan Nair,ishaan.nair78@yahoo.com,5.0,Reject,0.0,0.0,2.0,0.0,0.0,
+86,Charlie Smith,charlie.smith42@yahoo.com,4.0,Reject,14.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+87,Nikhil Khanna,nikhil.khanna2@yahoo.com,0.0,Reject,4.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+88,Aarav Sharma,aarav.sharma3@example.com,0.0,Reject,4.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+89,Charlie Smith,charlie.smith8@bits-pilani.ac.in,0.0,Reject,9.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+90,Bob Martinez,bob.martinez13@outlook.com,0.0,Reject,12.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+91,Tanvi Mishra,tanvi.mishra24@yahoo.com,0.0,Reject,7.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+92,Siddharth Shah,siddharth.shah25@yahoo.com,0.0,Reject,12.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+93,Pooja Agarwal,pooja.agarwal27@yahoo.com,0.0,Reject,13.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+94,Meera Pillai,meera.pillai55@bits-pilani.ac.in,0.0,Reject,13.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+95,Ananya Kumar,ananya.kumar56@hotmail.com,0.0,Reject,6.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+96,Aarav Sharma,aarav.sharma82@example.com,0.0,Reject,7.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+97,Divya Mehta,divya.mehta83@bits-pilani.ac.in,0.0,Reject,8.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+98,Kavya Reddy,kavya.reddy88@example.com,0.0,Reject,7.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+99,Aditya Bose,aditya.bose89@iitd.ac.in,0.0,Reject,1.0,2.8,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", 'great question']"
+100,Ananya Kumar,ananya.kumar96@gmail.com,0.0,Reject,9.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+101,Rahul Verma,rahul.verma99@yahoo.com,0.0,Reject,4.0,4.1,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", 'great question']; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"
+102,Shreya Tiwari,shreya.tiwari101@bits-pilani.ac.in,0.0,Reject,7.0,5.4,2.0,10.0,40.0,"ai_phrases_in_answer_1: [""i'd be happy to help"", ""here's a comprehensive overview""]; ai_phrases_in_answer_2: [""i'd be happy to help"", ""here's a comprehensive overview""]"

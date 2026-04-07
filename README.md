@@ -52,6 +52,114 @@ CSV / Internshala Export
 └───────────────┘
 ```
 
+## 🖥️ UI Dashboard — GenoTek Hiring Agent
+
+A real-time interactive dashboard to monitor the entire AI hiring pipeline — from candidate ingestion to anti-cheat detection and analytics.
+
+---
+
+### 📊 Dashboard Overview
+
+![Dashboard](./assets/dashboard.png)
+
+- Total candidates processed in real-time
+- Tier distribution (Fast-Track, Standard, Review, Reject)
+- AI phrase fingerprint detection
+- Scoring weight visualization
+
+---
+
+### ⚡ Pipeline Execution
+
+![Pipeline](./assets/pipeline.png)
+
+- Run full pipeline with one click
+- Supports mock / CSV / ATS integrations
+- Real-time progress tracking
+- Live execution logs
+
+---
+
+### 📜 Live Logs & Anti-Cheat Detection
+
+![Logs](./assets/logs.png)
+
+- Streaming logs during execution
+- AI fingerprint detection in candidate answers
+- Strike system for suspicious responses
+- Transparent decision-making system
+
+---
+
+### 👥 Candidate Management
+
+![Candidates](./assets/candidates1.png)
+![Candidates](./assets/candidates2.png)
+
+- Ranked candidate list with scores
+- Tier-based filtering (Fast-Track, Standard, etc.)
+- Search by name/email
+- Strike and flag tracking per candidate
+
+---
+
+### 🛡️ Anti-Cheat System
+
+![AntiCheat](./assets/anticheat.png)
+
+- Detect AI-generated answers in real-time
+- Pattern-based + embedding-based detection
+- Strike board for tracking suspicious candidates
+- Human vs AI answer comparison testing
+
+---
+
+### 📈 Analytics & Insights
+
+![Analytics](./assets/analytics.png)
+
+- Top-performing candidates leaderboard
+- Score distribution insights
+- Natural language query system (LLM-powered)
+- Hiring decision support
+
+---
+
+### 🤖 AI Query System (LLM Integration)
+
+![LLM](./assets/llm.png)
+
+- Ask questions like:
+  - “Which candidates showed the most original thinking?”
+  - “What % used AI-generated answers?”
+- Powered by Gemini / LLM backend
+- Works with structured hiring data
+
+---
+
+## 🧠 Key Highlights
+
+- ⚡ Fully interactive frontend (React-based inside HTML)
+- 🔄 Real-time pipeline execution with logs
+- 🛡️ Built-in AI cheating detection system
+- 📊 Data-driven hiring decisions
+- 🤖 Optional LLM-powered analytics layer
+
+---
+
+## 📂 Folder Structure (UI)
+
+frontend/
+├── dashboard.html
+├── assets/
+│ ├── dashboard.png
+│ ├── pipeline.png
+│ ├── logs.png
+│ ├── candidates.png
+│ ├── anticheat.png
+│ ├── analytics.png
+│ └── llm.png
+
 ---
 
 ## Files
