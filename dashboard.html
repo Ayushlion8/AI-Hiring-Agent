@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GenoTek Hiring Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0a0f;
+    --surface:  #111118;
+    --border:   #1e1e2e;
+    --border2:  #2a2a3f;
+    --accent:   #6c63ff;
+    --accent2:  #00d4aa;
+    --warn:     #ff6b35;
+    --danger:   #ff3b5c;
+    --text:     #e8e8f0;
+    --muted:    #6b6b8a;
+    --mono:     'Space Mono', monospace;
+    --sans:     'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── grid noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; display: flex; min-height: 100vh; }
+
+  /* ── sidebar ── */
+  .sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 10;
+  }
+
+  .logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .logo-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .logo-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .nav { flex: 1; padding: 12px 0; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    user-select: none;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(108,99,255,0.06); }
+  .nav-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(108,99,255,0.1);
+  }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .llm-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 5px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    word-break: break-all;
+  }
+  .llm-badge.active { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── main content ── */
+  .main {
+    margin-left: 220px;
+    flex: 1;
+    padding: 28px 32px;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .page-title {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .page-title span { color: var(--accent); }
+
+  /* ── stat cards ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border2); }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    border-radius: 0 10px 0 60px;
+    opacity: 0.08;
+  }
+  .stat-card.purple::after { background: var(--accent); }
+  .stat-card.green::after  { background: var(--accent2); }
+  .stat-card.orange::after { background: var(--warn); }
+  .stat-card.red::after    { background: var(--danger); }
+
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .stat-value { font-family: var(--mono); font-size: 32px; font-weight: 700; line-height: 1; }
+  .stat-card.purple .stat-value { color: var(--accent); }
+  .stat-card.green  .stat-value { color: var(--accent2); }
+  .stat-card.orange .stat-value { color: var(--warn); }
+  .stat-card.red    .stat-value { color: var(--danger); }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  /* ── panels ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .panel-body { padding: 20px; }
+
+  /* ── buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: #5a52e0; filter: brightness(1.1); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-outline {
+    background: transparent;
+    color: var(--muted);
+    border-color: var(--border2);
+  }
+  .btn-outline:hover { color: var(--text); border-color: var(--border2); background: rgba(255,255,255,0.04); }
+  .btn-danger { background: rgba(255,59,92,0.15); color: var(--danger); border-color: rgba(255,59,92,0.3); }
+  .btn-success { background: rgba(0,212,170,0.12); color: var(--accent2); border-color: rgba(0,212,170,0.3); }
+
+  /* ── table ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid rgba(30,30,46,0.6);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  tr:hover td { background: rgba(108,99,255,0.04); }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── tier badges ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .badge-fast  { background: rgba(108,99,255,0.2); color: var(--accent); border: 1px solid rgba(108,99,255,0.4); }
+  .badge-std   { background: rgba(0,212,170,0.15); color: var(--accent2); border: 1px solid rgba(0,212,170,0.3); }
+  .badge-rev   { background: rgba(255,107,53,0.15); color: var(--warn); border: 1px solid rgba(255,107,53,0.3); }
+  .badge-rej   { background: rgba(255,59,92,0.12); color: var(--danger); border: 1px solid rgba(255,59,92,0.25); }
+  .badge-elim  { background: rgba(255,0,0,0.2); color: #ff6666; border: 1px solid rgba(255,0,0,0.4); }
+
+  /* ── score bar ── */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .score-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .score-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+  .score-num { font-family: var(--mono); font-size: 12px; min-width: 35px; text-align: right; color: var(--text); }
+
+  /* ── pipeline controls ── */
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .control-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  select, input[type=number], input[type=text] {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 7px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+
+  /* ── progress bar ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  .progress-fill.pulse { animation: pulse 1.2s ease infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* ── log terminal ── */
+  .log-terminal {
+    background: #050508;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    height: 220px;
+    overflow-y: auto;
+    line-height: 1.7;
+    color: #7a7a9a;
+  }
+  .log-terminal .log-line { animation: fadeIn 0.2s ease; }
+  .log-terminal .log-line.green  { color: var(--accent2); }
+  .log-terminal .log-line.accent { color: var(--accent); }
+  .log-terminal .log-line.warn   { color: var(--warn); }
+  .log-terminal .log-line.error  { color: var(--danger); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+  /* ── anti-cheat tester ── */
+  .cheat-input {
+    width: 100%;
+    min-height: 100px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 12px;
+    font-family: var(--sans);
+    font-size: 13px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .cheat-input:focus { border-color: var(--accent); }
+
+  .result-box {
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid;
+    margin-top: 14px;
+    font-size: 13px;
+    animation: fadeIn 0.3s ease;
+  }
+  .result-box.flagged { background: rgba(255,59,92,0.08); border-color: rgba(255,59,92,0.3); }
+  .result-box.ok      { background: rgba(0,212,170,0.06); border-color: rgba(0,212,170,0.25); }
+  .result-title { font-family: var(--mono); font-size: 12px; margin-bottom: 8px; }
+  .pattern-tag {
+    display: inline-block;
+    background: rgba(255,59,92,0.15);
+    color: var(--danger);
+    border: 1px solid rgba(255,59,92,0.3);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    margin: 2px 3px;
+  }
+
+  /* ── tier chart ── */
+  .tier-chart { display: flex; flex-direction: column; gap: 10px; }
+  .tier-row { display: flex; align-items: center; gap: 12px; }
+  .tier-label { font-family: var(--mono); font-size: 11px; width: 90px; flex-shrink: 0; }
+  .tier-track { flex: 1; height: 22px; background: var(--border); border-radius: 4px; overflow: hidden; position: relative; }
+  .tier-fill   { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-family: var(--mono); font-size: 10px; font-weight: 700; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+  .tier-count  { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 40px; text-align: right; flex-shrink: 0; }
+
+  /* ── query box ── */
+  .query-row { display: flex; gap: 10px; }
+  .query-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 9px 14px;
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .query-input:focus { border-color: var(--accent); }
+  .query-answer {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 12px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    animation: fadeIn 0.3s ease;
+  }
+
+  /* ── pagination ── */
+  .pagination { display: flex; align-items: center; gap: 8px; justify-content: center; padding: 16px; }
+  .page-btn {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── search ── */
+  .search-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* ── spinner ── */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(108,99,255,0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── toast ── */
+  .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideIn 0.3s ease;
+    display: flex; align-items: center; gap: 10px;
+    min-width: 260px;
+  }
+  .toast.success { border-color: rgba(0,212,170,0.4); }
+  .toast.error   { border-color: rgba(255,59,92,0.4); }
+  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+  .empty-icon  { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-text  { font-size: 13px; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .phrase-tag {
+    background: rgba(255,107,53,0.1);
+    color: var(--warn);
+    border: 1px solid rgba(255,107,53,0.25);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+  .phrase-count {
+    background: rgba(255,107,53,0.2);
+    border-radius: 50%;
+    width: 16px; height: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    margin-left: 4px;
+    font-weight: 700;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+  .connection-warn {
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: var(--warn);
+    font-size: 13px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+
+<script>
+const { useState, useEffect, useRef, useCallback } = React;
+const API = 'http://localhost:5000/api';
+
+// ── helpers ────────────────────────────────────────────────────
+const api = async (path, opts = {}) => {
+  const r = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+};
+
+const tierBadge = tier => {
+  const map = { 'Fast-Track':'badge badge-fast', 'Standard':'badge badge-std', 'Review':'badge badge-rev', 'Reject':'badge badge-rej' };
+  return React.createElement('span', { className: map[tier] || 'badge badge-rej' }, tier || '—');
+};
+
+const scoreColor = s => {
+  if (s >= 60) return '#6c63ff';
+  if (s >= 44) return '#00d4aa';
+  if (s >= 25) return '#ff6b35';
+  return '#ff3b5c';
+};
+
+const ScoreBar = ({ score }) => {
+  const pct = Math.min(100, Math.max(0, parseFloat(score) || 0));
+  return React.createElement('div', { className: 'score-bar' },
+    React.createElement('div', { className: 'score-track' },
+      React.createElement('div', { className: 'score-fill', style: { width: pct + '%', background: scoreColor(pct) } })
+    ),
+    React.createElement('span', { className: 'score-num' }, pct.toFixed(1))
+  );
+};
+
+const logClass = line => {
+  if (/error|fail|traceback/i.test(line)) return 'log-line error';
+  if (/✓|done|complete|success|fetched/i.test(line)) return 'log-line green';
+  if (/step|component|pipeline/i.test(line)) return 'log-line accent';
+  if (/warn|skip/i.test(line)) return 'log-line warn';
+  return 'log-line';
+};
+
+// ── Toast ──────────────────────────────────────────────────────
+const Toast = ({ toasts }) =>
+  React.createElement('div', { className: 'toast-wrap' },
+    toasts.map(t =>
+      React.createElement('div', { key: t.id, className: `toast ${t.type}` },
+        React.createElement('span', null, t.type === 'success' ? '✓' : '✕'),
+        t.msg
+      )
+    )
+  );
+
+// ── Dashboard ──────────────────────────────────────────────────
+const Dashboard = ({ status, loading }) => {
+  const { tier_breakdown = {}, top_ai_phrases = [], conversations = {} } = status || {};
+  const total = status?.total_candidates || 0;
+  const totalInTiers = Object.values(tier_breakdown).reduce((a,b) => a+b, 0);
+
+  const tierRows = [
+    { key: 'Fast-Track', color: '#6c63ff' },
+    { key: 'Standard',   color: '#00d4aa' },
+    { key: 'Review',     color: '#ff6b35' },
+    { key: 'Reject',     color: '#ff3b5c' },
+  ];
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'stats-grid' },
+      React.createElement('div', { className: 'stat-card purple' },
+        React.createElement('div', { className: 'stat-label' }, 'Total Candidates'),
+        React.createElement('div', { className: 'stat-value' }, loading ? '…' : total),
+        React.createElement('div', { className: 'stat-sub' }, 'in database')
+      ),
+      React.createElement('div', { className: 'stat-card green' },
+        React.createElement('div', { className: 'stat-label' }, 'Fast-Track'),
+        React.createElement('div', { className: 'stat-value' }, tier_breakdown['Fast-Track'] || 0),
+        React.createElement('div', { className: 'stat-sub' }, 'top candidates')
+      ),
+      React.createElement('div', { className: 'stat-card orange' },
+        React.createElement('div', { className: 'stat-label' }, 'Active Convos'),
+        React.createElement('div', { className: 'stat-value' }, conversations.active || 0),
+        React.createElement('div', { className: 'stat-sub' }, 'email threads open')
+      ),
+      React.createElement('div', { className: 'stat-card red' },
+        React.createElement('div', { className: 'stat-label' }, 'AI Patterns'),
+        React.createElement('div', { className: 'stat-value' }, top_ai_phrases.length),
+        React.createElement('div', { className: 'stat-sub' }, 'fingerprints tracked')
+      )
+    ),
+
+    React.createElement('div', { className: 'two-col' },
+      React.createElement('div', { className: 'panel' },
+        React.createElement('div', { className: 'panel-header' },
+          React.createElement('span', { className: 'panel-title' }, 'Tier Distribution')
+        ),
+        React.createElement('div', { className: 'panel-body' },
+          React.createElement('div', { className: 'tier-chart' },
+            tierRows.map(({ key, color }) => {
+              const count = tier_breakdown[key] || 0;
+              const pct = totalInTiers ? (count / totalInTiers) * 100 : 0;
+              return React.createElement('div', { key, className: 'tier-row' },
+                React.createElement('span', { className: 'tier-label', style: { color } }, key),
+                React.createElement('div', { className: 'tier-track' },
+                  React.createElement('div', { className: 'tier-fill', style: { width: pct + '%', background: color + '33', color } },
+                    pct > 8 ? count : ''
+                  )
+                ),
+                React.createElement('span', { className: 'tier-count' }, count)
+              );
+            })
+          )
+        )
+      ),
+
+      React.createElement('div', { className: 'panel' },
+        React.createElement('div', { className: 'panel-header' },
+          React.createElement('span', { className: 'panel-title' }, 'AI Phrase Fingerprints')
+        ),
+        React.createElement('div', { className: 'panel-body' },
+          top_ai_phrases.length === 0
+            ? React.createElement('div', { className: 'empty-state' },
+                React.createElement('div', { className: 'empty-icon' }, '🔍'),
+                React.createElement('div', { className: 'empty-text' }, 'Run the pipeline to see detected AI phrases')
+              )
+            : React.createElement('div', { className: 'tag-row' },
+                top_ai_phrases.slice(0, 12).map((p, i) =>
+                  React.createElement('span', { key: i, className: 'phrase-tag' },
+                    p.phrase,
+                    React.createElement('span', { className: 'phrase-count' }, p.count)
+                  )
+                )
+              )
+        )
+      )
+    ),
+
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Scoring Weights')
+      ),
+      React.createElement('div', { className: 'panel-body' },
+        React.createElement('div', { style: { display: 'flex', gap: 24, flexWrap: 'wrap' } },
+          Object.entries(status?.scoring_weights || {}).map(([k, v]) =>
+            React.createElement('div', { key: k, style: { textAlign: 'center' } },
+              React.createElement('div', { style: { fontFamily: 'Space Mono', fontSize: 24, color: '#6c63ff', fontWeight: 700 } }, `×${v}`),
+              React.createElement('div', { style: { fontSize: 11, color: '#6b6b8a', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 } },
+                k.replace(/_/g, ' ')
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+};
+
+// ── Pipeline Tab ───────────────────────────────────────────────
+const PipelineTab = ({ onRefresh, addToast }) => {
+  const [source, setSource] = useState('mock');
+  const [count, setCount]   = useState(100);
+  const [running, setRunning] = useState(false);
+  const [pStatus, setPStatus] = useState(null);
+  const [logs, setLogs]     = useState([]);
+  const logRef = useRef(null);
+  const esRef  = useRef(null);
+
+  const pollStatus = useCallback(async () => {
+    try {
+      const s = await api('/pipeline/status');
+      setPStatus(s);
+      if (!s.running && running) {
+        setRunning(false);
+        onRefresh();
+        addToast(s.step === 'done' ? 'success' : 'error', s.message || 'Pipeline finished');
+      }
+    } catch {}
+  }, [running]);
+
+  useEffect(() => {
+    const t = setInterval(pollStatus, 1500);
+    return () => clearInterval(t);
+  }, [pollStatus]);
+
+  const startSSE = () => {
+    if (esRef.current) esRef.current.close();
+    const es = new EventSource(API + '/pipeline/logs');
+    es.onmessage = e => {
+      try {
+        const { msg } = JSON.parse(e.data);
+        if (msg !== 'ping') setLogs(l => [...l.slice(-200), msg]);
+        setTimeout(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, 50);
+      } catch {}
+    };
+    esRef.current = es;
+  };
+
+  const runPipeline = async () => {
+    setLogs([]);
+    setRunning(true);
+    startSSE();
+    try {
+      await api('/pipeline/run', { method: 'POST', body: JSON.stringify({ source, count: parseInt(count) }) });
+    } catch (e) {
+      addToast('error', e.message);
+      setRunning(false);
+    }
+  };
+
+  const progress = pStatus?.progress || 0;
+  const stepMap  = { idle:'—', fetching:'Fetching candidates', scoring:'Scoring', logging:'Logging to DB', anti_cheat:'Anti-cheat scan', done:'Complete', error:'Error' };
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Run Pipeline'),
+        running && React.createElement('span', { className: 'spinner' })
+      ),
+      React.createElement('div', { className: 'panel-body' },
+        React.createElement('div', { className: 'controls-row' },
+          React.createElement('div', { className: 'control-group' },
+            React.createElement('span', { className: 'control-label' }, 'Source'),
+            React.createElement('select', { value: source, onChange: e => setSource(e.target.value), style: { minWidth: 130 } },
+              React.createElement('option', { value: 'mock' }, '🧪 Mock (demo)'),
+              React.createElement('option', { value: 'csv'  }, '📄 CSV file'),
+              React.createElement('option', { value: 'greenhouse' }, '🏢 Greenhouse'),
+              React.createElement('option', { value: 'lever'      }, '⚙️  Lever'),
+              React.createElement('option', { value: 'workable'   }, '💼 Workable'),
+            )
+          ),
+          source === 'mock' && React.createElement('div', { className: 'control-group' },
+            React.createElement('span', { className: 'control-label' }, 'Candidates'),
+            React.createElement('input', { type: 'number', value: count, min: 10, max: 5000, onChange: e => setCount(e.target.value), style: { width: 100 } })
+          ),
+          React.createElement('div', { style: { marginTop: 18 } },
+            React.createElement('button', { className: 'btn btn-primary', onClick: runPipeline, disabled: running },
+              running ? '⏳ Running…' : '▶  Run Full Pipeline'
+            )
+          )
+        ),
+
+        pStatus && pStatus.step !== 'idle' && React.createElement('div', { style: { marginTop: 16 } },
+          React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6b6b8a', marginBottom: 4 } },
+            React.createElement('span', null, stepMap[pStatus.step] || pStatus.step),
+            React.createElement('span', null, progress + '%')
+          ),
+          React.createElement('div', { className: 'progress-bar' },
+            React.createElement('div', { className: 'progress-fill' + (running ? ' pulse' : ''), style: { width: progress + '%' } })
+          ),
+          pStatus.message && React.createElement('div', { style: { fontSize: 11, color: pStatus.step === 'error' ? '#ff3b5c' : '#6b6b8a', marginTop: 4 } },
+            pStatus.message
+          )
+        )
+      )
+    ),
+
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Live Logs'),
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => setLogs([]) }, 'Clear')
+      ),
+      React.createElement('div', { className: 'panel-body', style: { padding: '14px' } },
+        React.createElement('div', { className: 'log-terminal', ref: logRef },
+          logs.length === 0
+            ? React.createElement('span', { style: { color: '#3a3a5a' } }, '$ waiting for pipeline...')
+            : logs.map((l, i) =>
+                React.createElement('div', { key: i, className: logClass(l) }, '› ' + l)
+              )
+        )
+      )
+    )
+  );
+};
+
+// ── Candidates Tab ─────────────────────────────────────────────
+const CandidatesTab = () => {
+  const [data, setData]     = useState(null);
+  const [tier, setTier]     = useState('');
+  const [search, setSearch] = useState('');
+  const [page, setPage]     = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ page, per_page: 25 });
+      if (tier)   params.set('tier', tier);
+      if (search) params.set('search', search);
+      setData(await api('/candidates?' + params));
+    } catch {} finally { setLoading(false); }
+  }, [page, tier, search]);
+
+  useEffect(() => { setPage(1); }, [tier, search]);
+  useEffect(() => { load(); }, [load]);
+
+  const tiers = ['', 'Fast-Track', 'Standard', 'Review', 'Reject'];
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Candidate List'),
+        loading && React.createElement('span', { className: 'spinner' })
+      ),
+      React.createElement('div', { className: 'panel-body', style: { paddingBottom: 12 } },
+        React.createElement('div', { className: 'search-row' },
+          React.createElement('input', {
+            type: 'text',
+            placeholder: 'Search name or email…',
+            value: search,
+            onChange: e => setSearch(e.target.value),
+            style: { flex: 1, minWidth: 200 }
+          }),
+          React.createElement('select', { value: tier, onChange: e => setTier(e.target.value), style: { minWidth: 130 } },
+            tiers.map(t => React.createElement('option', { key: t, value: t }, t || 'All Tiers'))
+          ),
+          React.createElement('button', { className: 'btn btn-outline', onClick: load }, '↻ Refresh')
+        )
+      ),
+      React.createElement('div', { className: 'table-wrap' },
+        React.createElement('table', null,
+          React.createElement('thead', null,
+            React.createElement('tr', null,
+              ['Rank','Name','Email','Score','Tier','Strikes','Flags'].map(h =>
+                React.createElement('th', { key: h }, h)
+              )
+            )
+          ),
+          React.createElement('tbody', null,
+            !data || data.candidates.length === 0
+              ? React.createElement('tr', null,
+                  React.createElement('td', { colSpan: 7, style: { textAlign: 'center', padding: 40, color: '#6b6b8a' } },
+                    data ? 'No candidates found' : 'Loading…'
+                  )
+                )
+              : data.candidates.map((c, i) =>
+                  React.createElement('tr', { key: c.email || i },
+                    React.createElement('td', { style: { fontFamily: 'Space Mono', fontSize: 11, color: '#6b6b8a' } },
+                      c.rank || ((page-1)*25 + i + 1)
+                    ),
+                    React.createElement('td', { style: { fontWeight: 500 } }, c.name || '—'),
+                    React.createElement('td', { style: { color: '#6b6b8a', fontSize: 12 } }, c.email || '—'),
+                    React.createElement('td', { style: { minWidth: 140 } }, React.createElement(ScoreBar, { score: c.score || 0 })),
+                    React.createElement('td', null, tierBadge(c.tier)),
+                    React.createElement('td', null,
+                      c.eliminated
+                        ? React.createElement('span', { className: 'badge badge-elim' }, '❌ ELIM')
+                        : c.strikes > 0
+                        ? React.createElement('span', { style: { fontFamily: 'Space Mono', fontSize: 11, color: '#ff6b35' } }, `⚠ ${c.strikes}/3`)
+                        : React.createElement('span', { style: { color: '#3a3a5a', fontSize: 11 } }, '—')
+                    ),
+                    React.createElement('td', { style: { maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 11, color: '#6b6b8a' } },
+                      c.flags || '—'
+                    )
+                  )
+                )
+          )
+        )
+      ),
+      data && data.pages > 1 && React.createElement('div', { className: 'pagination' },
+        React.createElement('button', { className: 'page-btn', disabled: page <= 1, onClick: () => setPage(p => p-1) }, '‹'),
+        ...Array.from({ length: Math.min(7, data.pages) }, (_, i) => {
+          const p = i + 1;
+          return React.createElement('button', { key: p, className: 'page-btn' + (p === page ? ' active' : ''), onClick: () => setPage(p) }, p);
+        }),
+        React.createElement('button', { className: 'page-btn', disabled: page >= data.pages, onClick: () => setPage(p => p+1) }, '›')
+      )
+    )
+  );
+};
+
+// ── Anti-cheat Tab ─────────────────────────────────────────────
+const AntiCheatTab = () => {
+  const [answer, setAnswer]   = useState('');
+  const [result, setResult]   = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [strikes, setStrikes] = useState([]);
+
+  useEffect(() => {
+    api('/anticheat/strikes').then(setStrikes).catch(() => {});
+  }, []);
+
+  const check = async () => {
+    if (!answer.trim()) return;
+    setLoading(true);
+    try {
+      setResult(await api('/anticheat/check', { method: 'POST', body: JSON.stringify({ answer }) }));
+    } catch {} finally { setLoading(false); }
+  };
+
+  const sampleAI = `Certainly! I'd be happy to help with this comprehensive challenge. In today's rapidly evolving landscape of AI and automation, it's worth noting that leveraging cutting-edge tools provides a holistic solution. I would utilize Selenium with headless Chrome to seamlessly automate the login process, then use Beautiful Soup to parse the resulting HTML. This paradigm shift in approach would foster innovation and at its core represents a testament to modern development practices. To summarize, I hope this helps!`;
+
+  const sampleHuman = `I started by intercepting the network requests in DevTools to understand the auth flow. The reCAPTCHA v3 invisible variant scores the session — headless Chrome consistently scores 0.1 which gets blocked. I tried playwright-stealth first, then curl-impersonate to mimic Chrome 120's TLS fingerprint. The cookies are IP-bound so I routed requests through a residential proxy with sticky sessions. Here's the core: async def fetch_page(session, offset): return await session.get(url, params={'offset': offset})`;
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Live Answer Checker'),
+        React.createElement('div', { style: { display: 'flex', gap: 8 } },
+          React.createElement('button', { className: 'btn btn-outline', onClick: () => { setAnswer(sampleAI); setResult(null); } }, '🤖 AI Sample'),
+          React.createElement('button', { className: 'btn btn-outline', onClick: () => { setAnswer(sampleHuman); setResult(null); } }, '🧑 Human Sample'),
+        )
+      ),
+      React.createElement('div', { className: 'panel-body' },
+        React.createElement('textarea', {
+          className: 'cheat-input',
+          placeholder: 'Paste a candidate answer here to check it for AI-generated content…',
+          value: answer,
+          onChange: e => setAnswer(e.target.value)
+        }),
+        React.createElement('div', { style: { marginTop: 12 } },
+          React.createElement('button', { className: 'btn btn-primary', onClick: check, disabled: loading || !answer.trim() },
+            loading ? React.createElement('span', { className: 'spinner' }) : null,
+            loading ? ' Checking…' : '🔍 Check for AI'
+          )
+        ),
+        result && React.createElement('div', { className: `result-box ${result.flagged ? 'flagged' : 'ok'}` },
+          React.createElement('div', { className: 'result-title', style: { color: result.flagged ? '#ff3b5c' : '#00d4aa' } },
+            result.flagged ? '🚨 AI-GENERATED DETECTED' : '✅ Looks Human-Written'
+          ),
+          React.createElement('div', { style: { marginBottom: 10, color: '#9090b0' } }, result.explanation),
+          result.matched_patterns && result.matched_patterns.length > 0 && React.createElement('div', null,
+            React.createElement('div', { style: { fontSize: 11, color: '#6b6b8a', marginBottom: 6 } }, 'MATCHED PATTERNS:'),
+            result.matched_patterns.map((p, i) =>
+              React.createElement('span', { key: i, className: 'pattern-tag' }, p)
+            )
+          )
+        )
+      )
+    ),
+
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Strike Board'),
+        React.createElement('button', { className: 'btn btn-outline', onClick: () => api('/anticheat/strikes').then(setStrikes) }, '↻')
+      ),
+      strikes.length === 0
+        ? React.createElement('div', { className: 'empty-state' },
+            React.createElement('div', { className: 'empty-icon' }, '🛡️'),
+            React.createElement('div', { className: 'empty-text' }, 'No strikes yet — run the pipeline first')
+          )
+        : React.createElement('div', { className: 'table-wrap' },
+            React.createElement('table', null,
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  ['Candidate', 'Strikes', 'Status', 'Last Reason'].map(h => React.createElement('th', { key: h }, h))
+                )
+              ),
+              React.createElement('tbody', null,
+                strikes.slice(0, 30).map((s, i) =>
+                  React.createElement('tr', { key: i },
+                    React.createElement('td', { style: { fontFamily: 'Space Mono', fontSize: 11 } }, s.candidate_id),
+                    React.createElement('td', null,
+                      React.createElement('span', { style: { fontFamily: 'Space Mono', color: s.strikes >= 3 ? '#ff3b5c' : '#ff6b35' } },
+                        '⚠'.repeat(Math.min(s.strikes, 3)) + ` ${s.strikes}/3`
+                      )
+                    ),
+                    React.createElement('td', null,
+                      s.eliminated
+                        ? React.createElement('span', { className: 'badge badge-elim' }, '❌ ELIMINATED')
+                        : React.createElement('span', { className: 'badge badge-std' }, '✅ Active')
+                    ),
+                    React.createElement('td', { style: { color: '#6b6b8a', fontSize: 11, maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
+                      s.log.length > 0 ? s.log[s.log.length-1]?.reason : '—'
+                    )
+                  )
+                )
+              )
+            )
+          )
+    )
+  );
+};
+
+// ── Analytics Tab ──────────────────────────────────────────────
+const AnalyticsTab = ({ status }) => {
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer]     = useState('');
+  const [loading, setLoading]   = useState(false);
+  const [topN, setTopN]         = useState([]);
+  const [scores, setScores]     = useState(null);
+
+  useEffect(() => {
+    api('/analytics/top_candidates?n=10').then(setTopN).catch(() => {});
+    api('/analytics/scores').then(setScores).catch(() => {});
+  }, []);
+
+  const query = async () => {
+    if (!question.trim()) return;
+    setLoading(true);
+    try {
+      const r = await api('/analytics/query', { method: 'POST', body: JSON.stringify({ question }) });
+      setAnswer(r.answer);
+    } catch (e) { setAnswer('Error: ' + e.message); } finally { setLoading(false); }
+  };
+
+  const llmActive = status?.llm_active;
+
+  return React.createElement('div', null,
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Top 10 Candidates')
+      ),
+      topN.length === 0
+        ? React.createElement('div', { className: 'empty-state' },
+            React.createElement('div', { className: 'empty-icon' }, '🏆'),
+            React.createElement('div', { className: 'empty-text' }, 'Run the pipeline to see top candidates')
+          )
+        : React.createElement('div', { className: 'table-wrap' },
+            React.createElement('table', null,
+              React.createElement('thead', null,
+                React.createElement('tr', null,
+                  ['#', 'Name', 'Email', 'Score', 'Tier'].map(h => React.createElement('th', { key: h }, h))
+                )
+              ),
+              React.createElement('tbody', null,
+                topN.map((c, i) =>
+                  React.createElement('tr', { key: i },
+                    React.createElement('td', { style: { fontFamily: 'Space Mono', color: '#6c63ff', fontWeight: 700 } }, '#' + (i+1)),
+                    React.createElement('td', { style: { fontWeight: 500 } }, c.name),
+                    React.createElement('td', { style: { color: '#6b6b8a', fontSize: 12 } }, c.email),
+                    React.createElement('td', { style: { minWidth: 140 } }, React.createElement(ScoreBar, { score: c.score })),
+                    React.createElement('td', null, tierBadge(c.tier))
+                  )
+                )
+              )
+            )
+          )
+    ),
+
+    React.createElement('div', { className: 'panel' },
+      React.createElement('div', { className: 'panel-header' },
+        React.createElement('span', { className: 'panel-title' }, 'Ask the Knowledge Base'),
+        React.createElement('span', { className: `llm-badge ${llmActive ? 'active' : ''}`, style: { fontSize: 10 } },
+          llmActive ? '● Gemini ready' : '○ No LLM'
+        )
+      ),
+      React.createElement('div', { className: 'panel-body' },
+        !llmActive && React.createElement('div', { className: 'connection-warn' },
+          '⚠ Set GEMINI_API_KEY to enable natural language queries'
+        ),
+        React.createElement('div', { className: 'query-row' },
+          React.createElement('input', {
+            type: 'text',
+            className: 'query-input',
+            placeholder: 'Which 3 candidates showed the most original thinking?',
+            value: question,
+            onChange: e => setQuestion(e.target.value),
+            onKeyDown: e => e.key === 'Enter' && query(),
+            disabled: !llmActive
+          }),
+          React.createElement('button', { className: 'btn btn-primary', onClick: query, disabled: loading || !llmActive || !question.trim() },
+            loading ? React.createElement('span', { className: 'spinner' }) : '→'
+          )
+        ),
+        React.createElement('div', { style: { display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' } },
+          [
+            'Which candidates showed the most original thinking?',
+            'What % of candidates likely used AI to write their answers?',
+            'What are the top 3 strongest answers received?',
+          ].map(q =>
+            React.createElement('button', { key: q, className: 'btn btn-outline', style: { fontSize: 10 }, onClick: () => { setQuestion(q); } }, q)
+          )
+        ),
+        answer && React.createElement('div', { className: 'query-answer' }, answer)
+      )
+    )
+  );
+};
+
+// ── App root ───────────────────────────────────────────────────
+const App = () => {
+  const [tab, setTab]       = useState('dashboard');
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [toasts, setToasts] = useState([]);
+  const [connected, setConnected] = useState(true);
+
+  const addToast = (type, msg) => {
+    const id = Date.now();
+    setToasts(t => [...t, { id, type, msg }]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 4000);
+  };
+
+  const loadStatus = async () => {
+    try {
+      setStatus(await api('/status'));
+      setConnected(true);
+    } catch {
+      setConnected(false);
+    } finally { setLoading(false); }
+  };
+
+  useEffect(() => { loadStatus(); const t = setInterval(loadStatus, 8000); return () => clearInterval(t); }, []);
+
+  const navItems = [
+    { id: 'dashboard',  icon: '◈', label: 'Dashboard'  },
+    { id: 'pipeline',   icon: '⚡', label: 'Pipeline'   },
+    { id: 'candidates', icon: '⊞', label: 'Candidates' },
+    { id: 'anticheat',  icon: '🛡', label: 'Anti-Cheat' },
+    { id: 'analytics',  icon: '◉', label: 'Analytics'  },
+  ];
+
+  return React.createElement('div', { className: 'app' },
+    // Sidebar
+    React.createElement('nav', { className: 'sidebar' },
+      React.createElement('div', { className: 'logo' },
+        React.createElement('div', { className: 'logo-mark' }, 'GenoTek'),
+        React.createElement('div', { className: 'logo-name' }, 'Hiring Agent'),
+        React.createElement('div', { className: 'logo-sub' }, 'Autonomous Pipeline v1.0')
+      ),
+      React.createElement('div', { className: 'nav' },
+        navItems.map(n =>
+          React.createElement('div', {
+            key: n.id,
+            className: 'nav-item' + (tab === n.id ? ' active' : ''),
+            onClick: () => setTab(n.id)
+          },
+            React.createElement('span', { className: 'nav-icon' }, n.icon),
+            n.label
+          )
+        )
+      ),
+      React.createElement('div', { className: 'sidebar-footer' },
+        React.createElement('div', { className: `llm-badge ${status?.llm_active ? 'active' : ''}` },
+          status?.llm_provider || 'No LLM configured'
+        )
+      )
+    ),
+
+    // Main
+    React.createElement('main', { className: 'main' },
+      !connected && React.createElement('div', { className: 'connection-warn' },
+        '⚠ Cannot connect to API. Run: ',
+        React.createElement('code', { style: { fontFamily: 'Space Mono', marginLeft: 6 } }, 'python api.py')
+      ),
+
+      React.createElement('div', { className: 'page-header' },
+        React.createElement('div', { className: 'page-title' },
+          React.createElement('span', null, '// '),
+          navItems.find(n => n.id === tab)?.label || tab
+        ),
+        React.createElement('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+          React.createElement('span', { style: { fontFamily: 'Space Mono', fontSize: 10, color: '#3a3a5a' } },
+            new Date().toLocaleTimeString()
+          ),
+          React.createElement('button', { className: 'btn btn-outline', onClick: loadStatus }, '↻ Sync')
+        )
+      ),
+
+      tab === 'dashboard'  && React.createElement(Dashboard,   { status, loading }),
+      tab === 'pipeline'   && React.createElement(PipelineTab, { onRefresh: loadStatus, addToast }),
+      tab === 'candidates' && React.createElement(CandidatesTab),
+      tab === 'anticheat'  && React.createElement(AntiCheatTab),
+      tab === 'analytics'  && React.createElement(AnalyticsTab, { status })
+    ),
+
+    React.createElement(Toast, { toasts })
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
